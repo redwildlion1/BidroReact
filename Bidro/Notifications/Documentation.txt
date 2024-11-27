@@ -1,0 +1,1 @@
+Here you should find everything for the notifications, such as the notification panel, the SMS notifications and the email notifications.

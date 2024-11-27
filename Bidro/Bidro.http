@@ -1,0 +1,6 @@
+@Bidro_HostAddress = http://localhost:5137
+
+GET {{Bidro_HostAddress}}/api/categories/
+Accept: application/json
+
+###
