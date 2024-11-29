@@ -1,18 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Bidro.Config;
+using Bidro.FrontEndBuildBlocks.Categories.Persistence;
 
 namespace Bidro.FrontEndBuildBlocks.Categories;
 
 public record Subcategory
 {
-    [Required]
-    [StringLength(Constants.CategoryIdLength)]
-    public string ParentCategoryId { get; }
-
-    [Required]
+    [Key]
     [StringLength(Constants.SubcategoryIdLength)]
-    public string Id { get; }
-
+    public string Id { get; set; }
+    
     [Required]
     [StringLength(50)]
     public string Name { get; }
@@ -21,12 +19,20 @@ public record Subcategory
     [StringLength(50)]
     public string Icon { get; }
     
-    public Subcategory(string parentCategoryId, string id, string name, string icon)
+    [Required]
+    [StringLength(Constants.CategoryIdLength)]
+    [ForeignKey(nameof(Category))]
+    public string ParentCategoryId { get; set; }
+    
+    [Required]
+    public required Category ParentCategory { get; set; } 
+    
+    public Subcategory(string parentCategoryId, string name, string icon, string id)
     {
-        if(CheckIdSubcategory(id) && CheckNameSubcategory(name) && CheckIconSubcategory(icon))
+        Id = id;
+        if(CheckNameSubcategory(name) && CheckIconSubcategory(icon))
         {
             ParentCategoryId = parentCategoryId;
-            Id = id;
             Name = name;
             Icon = icon;
         }
@@ -36,24 +42,20 @@ public record Subcategory
         }
     }
     
-    private static bool CheckIdSubcategory(string id)
-    {
-        return id.Length == Constants.SubcategoryIdLength;
-    }
     
-    private static bool CheckNameSubcategory(string name)
+    public static bool CheckNameSubcategory(string name)
     {
         return name.Length > 0;
     }
     
-    private static bool CheckIconSubcategory(string icon)
+    public static bool CheckIconSubcategory(string icon)
     {
         return icon.Length > 0;
     }
     
     public override string ToString()
     {
-        return $"ParentCategoryId: {ParentCategoryId}, Id: {Id}, Name: {Name}, Icon: {Icon}";
+        return $"ParentCategoryId: {ParentCategoryId}, Name: {Name}, Icon: {Icon}";
     }
     
 }

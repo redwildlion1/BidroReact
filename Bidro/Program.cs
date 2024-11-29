@@ -1,7 +1,6 @@
 
 using Bidro.Config;
 using Bidro.FrontEndBuildBlocks.Categories;
-using static Bidro.FrontEndBuildBlocks.Categories.CategoryGetters;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -15,7 +14,6 @@ var app = builder.Build();
 
 
 var categoriesApi = app.MapGroup("/api/categories");
-categoriesApi.MapGet("", () => Categories);
 
 
 

@@ -1,24 +1,27 @@
+using Bidro.FrontEndBuildBlocks.Categories;
+using Bidro.Listings;
+
 namespace Bidro.FrontEndBuildBlocks.Forms;
 
 public record FormQuestion
 {
-    public Guid Id { get; }
+    public Guid Id { get; init; }
+    private int Order { get; }
+
+    private string Label { get; }
+
+    private InputTypes InputType { get; }
+
+    private bool Required { get; }
     
-    public string SubcategoryId { get; }
-    
-    public int Order { get; }
+    public virtual required Subcategory Subcategory { get; init; }
+    private string SubcategoryId { get; }
+    public virtual required ICollection<ListingComponents.FormAnswer> Answers { get; init; }
 
-    public string Label { get; }
-
-    public InputTypes InputType { get; }
-
-    public bool Required { get; }
-
-    public FormQuestion(Guid id, string label, InputTypes inputType, bool required, int order, string subcategoryId)
+    public FormQuestion( string label, InputTypes inputType, bool required, int order, string subcategoryId)
     {
-        if(CheckFormQuestion(id, subcategoryId, order, subcategoryId))
+        if(CheckFormQuestion(subcategoryId, order, subcategoryId))
         {
-            Id = id;
             Label = label;
             InputType = inputType;
             Required = required;
@@ -31,10 +34,10 @@ public record FormQuestion
         }
     }
     
-    private static bool CheckFormQuestion(Guid id, string label, int order, string subcategoryId)
+    private static bool CheckFormQuestion( string label, int order, string subcategoryId)
     {
-        return CheckIdFormQuestion(id)
-               && CheckLabelFormQuestion(label)
+        return 
+               CheckLabelFormQuestion(label)
                && CheckOrderFormQuestion(order)
                && CheckSubcategoryIdFormQuestion(subcategoryId);
     }
@@ -48,11 +51,7 @@ public record FormQuestion
     {
         return order > 0;
     }
-
-    private static bool CheckIdFormQuestion(Guid id)
-    {
-        return id != Guid.Empty;
-    }
+    
     
     private static bool CheckLabelFormQuestion(string label)
     {
@@ -61,6 +60,6 @@ public record FormQuestion
     
     public override string ToString()
     {
-        return $"Id: {Id}, Label: {Label}, InputType: {InputType}, Required: {Required}";
+        return $"Label: {Label}, InputType: {InputType}, Required: {Required}";
     }
 }

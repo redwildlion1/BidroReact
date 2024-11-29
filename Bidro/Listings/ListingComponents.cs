@@ -1,84 +1,35 @@
 using System.ComponentModel.DataAnnotations;
+using Bidro.Config.NoIdeeaForAName;
 using Bidro.FrontEndBuildBlocks.Forms;
 
 namespace Bidro.Listings;
 
 public abstract class ListingComponents
 {
-    public sealed record Location
+    public sealed record Location(
+        Guid CountyId,
+        Guid CityId,
+        string Address,
+        string PostalCode,
+        Guid ListingId)
     {
-        public Location(Guid CountyId,
-            Guid CityId,
-            string Address,
-            string PostalCode,
-            Listing Listing,
-            Guid ListingId)
-        {
-            this.CountyId = CountyId;
-            this.CityId = CityId;
-            this.Address = Address;
-            this.PostalCode = PostalCode;
-            this.Listing = Listing;
-            this.ListingId = ListingId;
-        }
-        public Guid CountyId { get; init; }
-        public Guid CityId { get; init; }
-        public string Address { get; init; }
-        public string PostalCode { get; init; }
-        public Listing Listing { get; init; }
-        [Key]
-        public Guid ListingId { get; init; }
+        public required County County { get; init; }
+        public required City City { get; init; }
+        public required Listing Listing { get; init; }
     }
 
-    public sealed record Contact
+    public sealed record Contact(string Name, string Email, string Phone, Guid ListingId)
     {
-        public Contact
-            (string Name, string Email, string Phone, Listing Listing, Guid ListingId)
-        {
-            this.Name = Name;
-            this.Email = Email;
-            this.Phone = Phone;
-            this.Listing = Listing;
-            this.ListingId = ListingId;
-        }
-
-        [StringLength(50)]
-        public string Name { get; init; }
-        [StringLength(50)]
-        public string Email { get; init; }
-        [StringLength(15)]
-        public string Phone { get; init; }
-        public Listing Listing { get; init; }
-        [Key]
-        public Guid ListingId { get; init; }
-        
+        public required Listing Listing { get; init; }
     }
 
-    public sealed record FormAnswer
+    public sealed record FormAnswer(
+        string Value,
+        Guid Id,
+        Guid FormQuestionId,
+        Guid ListingId)
     {
-        public FormAnswer(string Value,
-            Guid QuestionId,
-            FormQuestion Question,
-            Guid FormQuestionId,
-            Listing Listing,
-            Guid ListingId)
-        {
-            this.Value = Value;
-            this.QuestionId = QuestionId;
-            this.Question = Question;
-            this.FormQuestionId = FormQuestionId;
-            this.Listing = Listing;
-            this.ListingId = ListingId;
-        }
-        public string Value { get; init; }
-        [Required]
-        public Guid QuestionId { get; init; }
-        public FormQuestion Question { get; init; }
-        [Required]
-        public Guid FormQuestionId { get; init; }
-        public Listing Listing { get; init; }
-        [Key]
-        public Guid ListingId { get; init; }
-        
+        public required FormQuestion Question { get; init; }
+        public required Listing Listing { get; init; }
     }
 }

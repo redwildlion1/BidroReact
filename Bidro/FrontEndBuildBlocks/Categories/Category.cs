@@ -1,29 +1,30 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 using Bidro.Config;
-
 
 namespace Bidro.FrontEndBuildBlocks.Categories;
 
 public record Category
 {
-    [Required]
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [StringLength(Constants.CategoryIdLength)]
-    public string Id { get; }
-
+    public string Id { get; set; }
+    
     [Required]
     [StringLength(50)]
-    public string Name { get; }
-
+    public string Name { get; set; }
+    
     [Required]
     [StringLength(50)]
-    public string Icon { get; }
-
-    public Category(string id, string name, string icon)
+    public string Icon { get; set; }
+    
+    public virtual IEnumerable<Subcategory> Subcategories { get; set; }  = new List<Subcategory>();
+    
+    public Category(string name, string icon, string id)
     {
-        if(CheckIdCategory(id) && CheckNameCategory(name) && CheckIconCategory(icon))
+        Id = id;
+        if (CheckNameCategory(name) && CheckIconCategory(icon))
         {
-            Id = id;
             Name = name;
             Icon = icon;
         }
@@ -33,30 +34,27 @@ public record Category
         }
     }
 
-    private static bool CheckIdCategory(string id)
-    {
-        return id.Length == Constants.CategoryIdLength;
-    }
-    
-    private static bool CheckNameCategory(string name)
+    public static bool CheckNameCategory(string name)
     {
         return name.Length > 0;
     }
-    
-    private static bool CheckIconCategory(string icon)
+
+    public static bool CheckIconCategory(string icon)
     {
         return icon.Length > 0;
     }
-    
+
     public override string ToString()
     {
-        return $"Id: {Id}, Name: {Name}, Icon: {Icon}";
+        return $" Name: {Name}, Icon: {Icon}";
     }
-    
-    public readonly struct CategoryWithSubcategories(Category category, List<Subcategory> subcategories)
+}
+
+public readonly struct CategoryWithSubcategories(Category category, List<Subcategory> subcategories)
     {
         public Category Category { get; } = category;
 
         public List<Subcategory> Subcategories { get; } = subcategories;
     }
-}
+    
+    

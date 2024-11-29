@@ -3,9 +3,9 @@ namespace Bidro.FrontEndBuildBlocks.Categories.Persistence;
 
 public class CategoriesPostgre : ICategoriesDb
 {
-    public List<Category.CategoryWithSubcategories> GetCategoriesWithSubcategories()
+    public List<CategoryWithSubcategories> GetCategoriesWithSubcategories()
     {
-        return new List<Category.CategoryWithSubcategories>();
+        return new List<CategoryWithSubcategories>();
     }
 
     public HttpResponseMessage AddCategory(Category category)
