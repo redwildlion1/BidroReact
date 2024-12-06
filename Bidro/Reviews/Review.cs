@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Bidro.Listings;
 
 namespace Bidro.Reviews;
@@ -15,6 +16,7 @@ public class Review
     }
 
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; init; }
     
     public string Content { get; init; }

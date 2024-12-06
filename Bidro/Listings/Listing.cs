@@ -1,31 +1,23 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bidro.Listings;
 
-public sealed class Listing
+public sealed class Listing(
+    Guid id,
+    string title)
 {
-    public Listing(Guid id, ListingComponents.Location location, ListingComponents.Contact contact, List<ListingComponents.FormAnswer> formAnswers, string title)
-    {
-        Id = id;
-        Location = location;
-        Contact = contact;
-        FormAnswers = formAnswers;
-        Title = title;
-    }
-
     [Key]
-    public Guid Id { get; init; }
-    
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; init; } = id;
+
     [Required]
     [StringLength(50)]
-    public string Title { get; init; }
-    
-    [Required]
-    public ListingComponents.Location Location { get; init; }
-    
-    [Required]
-    public ListingComponents.Contact Contact { get; init; }
-    
-    [Required]
-    public List<ListingComponents.FormAnswer> FormAnswers { get; init; }
+    public string Title { get; init; } = title;
+
+    public required ListingComponents.Location Location { get; init; } 
+
+    public  required ListingComponents.Contact Contact { get; init; }
+
+    public required  List<ListingComponents.FormAnswer> FormAnswers { get; init; }
 }

@@ -48,6 +48,7 @@ public record Category
     {
         return $" Name: {Name}, Icon: {Icon}";
     }
+    
 }
 
 public readonly struct CategoryWithSubcategories(Category category, List<Subcategory> subcategories)

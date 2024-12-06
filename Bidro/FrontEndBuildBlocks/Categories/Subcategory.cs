@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Bidro.Config;
-using Bidro.FrontEndBuildBlocks.Categories.Persistence;
+using Bidro.FrontEndBuildBlocks.Forms;
 
 namespace Bidro.FrontEndBuildBlocks.Categories;
 
@@ -26,6 +26,8 @@ public record Subcategory
     
     [Required]
     public required Category ParentCategory { get; set; } 
+    
+    public IEnumerable<FormQuestion.FormQuestion>? FormQuestions { get; set; }
     
     public Subcategory(string parentCategoryId, string name, string icon, string id)
     {

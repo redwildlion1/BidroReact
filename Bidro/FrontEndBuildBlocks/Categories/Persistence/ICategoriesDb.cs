@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Bidro.FrontEndBuildBlocks.Categories.Persistence;
 
 public interface ICategoriesDb
 {
-    public List<CategoryWithSubcategories> GetCategoriesWithSubcategories();
-    public HttpResponseMessage AddCategory(Category category);
-    public HttpResponseMessage AddSubcategory(Subcategory subcategory);
+    public Task<IActionResult> AddCategory(Category category);
+    public Task<IActionResult> AddSubcategory(Subcategory subcategory);
 }

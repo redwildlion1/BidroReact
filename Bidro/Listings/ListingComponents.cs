@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-using Bidro.Config.NoIdeeaForAName;
+using System.ComponentModel.DataAnnotations.Schema;
+using Bidro.Config.LocationComponents;
+using Bidro.FrontEndBuildBlocks.FormQuestion;
 using Bidro.FrontEndBuildBlocks.Forms;
 
 namespace Bidro.Listings;
@@ -25,6 +26,7 @@ public abstract class ListingComponents
 
     public sealed record FormAnswer(
         string Value,
+        [property: DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         Guid Id,
         Guid FormQuestionId,
         Guid ListingId)

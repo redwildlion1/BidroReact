@@ -4,3 +4,15 @@ GET {{Bidro_HostAddress}}/api/categories/
 Accept: application/json
 
 ###
+
+POST {{Bidro_HostAddress}}/api/counties/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Arges",
+  "code": "AG"
+}
+
+###
+

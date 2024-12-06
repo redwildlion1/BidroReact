@@ -16,7 +16,6 @@ public enum InputTypes
     ImageUploader,
     VideoUploader
 }
-
 public static class InputTypeMappings
 {
     private static readonly Dictionary<InputTypes, string> InputDictionary = new()
