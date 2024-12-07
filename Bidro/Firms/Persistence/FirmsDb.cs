@@ -53,7 +53,7 @@ public class FirmsDb(DbContextOptions<EntityDbContext> options) : IFirmsDb
         await using var db = new EntityDbContext(options);
         db.Firms.Update(firm);
         await db.SaveChangesAsync();
-        return new OkResult();d
+        return new OkResult();
     }
 
     public async Task<IActionResult> DeleteFirm(Guid firmId)
