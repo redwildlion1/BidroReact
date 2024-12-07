@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Bidro.Config;
+using Bidro.Firms;
 
 namespace Bidro.FrontEndBuildBlocks.Categories;
 
@@ -18,7 +19,8 @@ public record Category
     [StringLength(50)]
     public string Icon { get; set; }
     
-    public virtual IEnumerable<Subcategory> Subcategories { get; set; }  = new List<Subcategory>();
+    public List<Subcategory>? Subcategories { get; set; }
+    public List<Firm>? Firms { get; set; }
     
     public Category(string name, string icon, string id)
     {

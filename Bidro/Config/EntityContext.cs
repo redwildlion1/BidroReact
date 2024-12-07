@@ -1,7 +1,9 @@
-using Bidro.Config.LocationComponents;
+using Bidro.Firms;
 using Bidro.FrontEndBuildBlocks.Categories;
 using Bidro.FrontEndBuildBlocks.FormQuestion;
 using Bidro.Listings;
+using Bidro.LocationComponents;
+using Bidro.Reviews;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -18,6 +20,10 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     public DbSet<ListingComponents.FormAnswer> FormAnswers { get; set; }
     public DbSet<Listing> Listings { get; set; }
     public DbSet<FormQuestion> FormQuestions { get; set; }
+    public DbSet<Firm> Firms { get; set; }
+    public DbSet<FirmLocation> FirmLocations { get; set; }
+    public DbSet<FirmContact> FirmContacts { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -96,6 +102,53 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .WithOne(a => a.Question)
             .HasForeignKey(a => a.FormQuestionId);
         modelBuilder.Entity<FormQuestion>().HasOne(q => q.Subcategory).WithMany(s => s.FormQuestions);
+        
+        modelBuilder.Entity<Firm>().HasKey(f => f.Id);
+        modelBuilder.Entity<Firm>().Property(f => f.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        modelBuilder.Entity<Firm>().Property(f => f.Name).IsRequired();
+        modelBuilder.Entity<Firm>().HasOne(f => f.Location).WithOne(l => l.Firm)
+            .HasForeignKey<Firm>(f => f.LocationId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Firm>().HasOne(f => f.Contact).WithOne(c => c.Firm)
+            .HasForeignKey<Firm>(f => f.ContactId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Firm>().HasMany(f => f.Categories).WithMany(c => c.Firms)
+            .UsingEntity<Dictionary<string, object>>("FirmCategory",
+                r => r.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
+                l => l.HasOne<Firm>().WithMany().HasForeignKey("FirmId"));
+        modelBuilder.Entity<Firm>().HasMany(f => f.Reviews).WithOne(r => r.Firm);
+        modelBuilder.Entity<Firm>().HasMany(f => f.Users).WithOne(u => u.Firm);
+        
+        modelBuilder.Entity<FirmLocation>().HasKey(f => f.Id);
+        modelBuilder.Entity<FirmLocation>().Property(f => f.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        modelBuilder.Entity<FirmLocation>().Property(f => f.Address).IsRequired();
+        modelBuilder.Entity<FirmLocation>().Property(f => f.PostalCode).IsRequired();
+        modelBuilder.Entity<FirmLocation>().HasOne(f => f.City).WithMany(c => c.FirmLocations);
+        modelBuilder.Entity<FirmLocation>().HasOne(f => f.County).WithMany(c => c.FirmLocations);
+        modelBuilder.Entity<FirmLocation>().HasOne(f => f.Firm).WithOne(f => f.Location);
+        
+        modelBuilder.Entity<FirmContact>().HasKey(f => f.Id);
+        modelBuilder.Entity<FirmContact>().Property(f => f.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        modelBuilder.Entity<FirmContact>().Property(f => f.Email).IsRequired();
+        modelBuilder.Entity<FirmContact>().Property(f => f.Phone).IsRequired();
+        modelBuilder.Entity<FirmContact>().Property(f => f.Fax);
+        modelBuilder.Entity<FirmContact>().HasOne(f => f.Firm).WithOne(f => f.Contact);
+        
+        modelBuilder.Entity<Review>().HasKey(r => r.Id);
+        modelBuilder.Entity<Review>().Property(r => r.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        modelBuilder.Entity<Review>().Property(r => r.Content).IsRequired();
+        modelBuilder.Entity<Review>().Property(r => r.Rating).IsRequired();
+        modelBuilder.Entity<Review>().Property(r => r.Date).IsRequired();
+        modelBuilder.Entity<Review>().HasOne(r => r.Firm).WithMany(f => f.Reviews);
+        
     }
 }
 

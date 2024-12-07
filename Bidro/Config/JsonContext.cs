@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
-using Bidro.Config.LocationComponents;
 using Bidro.FrontEndBuildBlocks.Categories;
 using Bidro.FrontEndBuildBlocks.Categories.Persistence;
 using Bidro.FrontEndBuildBlocks.FormQuestion;
 using Bidro.FrontEndBuildBlocks.Forms;
 using Bidro.Listings;
+using Bidro.LocationComponents;
 
 namespace Bidro.Config;
 

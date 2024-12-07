@@ -1,3 +1,4 @@
+using Bidro.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ public class AccountController(UserManager<IdentityUser> userManager, SignInMana
     : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterModel model)
+    public async Task<IActionResult> Register(Models.RegisterModel model)
     {
         var user = new IdentityUser
         {
@@ -24,7 +25,7 @@ public class AccountController(UserManager<IdentityUser> userManager, SignInMana
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginModel model)
+    public async Task<IActionResult> Login(Models.LoginModel model)
     {
         var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
         if (result.Succeeded)
@@ -42,16 +43,4 @@ public class AccountController(UserManager<IdentityUser> userManager, SignInMana
         return Ok();
     }
     
-    public class RegisterModel(string email, string password)
-    {
-        public string Email { get; set; } = email;
-        public string Password { get; set; } = password;
-    }
-    
-    public class LoginModel(string email, string password, bool rememberMe)
-    {
-        public string Email { get; set; } = email;
-        public string Password { get; set; } = password;
-        public bool RememberMe { get; set; } = rememberMe;
-    }
 }

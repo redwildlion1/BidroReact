@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Config.LocationComponents;
 using Bidro.FrontEndBuildBlocks.FormQuestion;
 using Bidro.FrontEndBuildBlocks.Forms;
+using Bidro.LocationComponents;
 
 namespace Bidro.Listings;
 

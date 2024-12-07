@@ -1,4 +1,4 @@
-using Bidro.Config.LocationComponents;
+using Bidro.LocationComponents;
 using Bidro.LocationComponents.Persistence;
 using Microsoft.AspNetCore.Mvc;
 

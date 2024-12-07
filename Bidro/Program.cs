@@ -1,11 +1,8 @@
 
 using Bidro.Config;
-using Bidro.Config.LocationComponents;
-using Bidro.FrontEndBuildBlocks.Categories;
 using Bidro.FrontEndBuildBlocks.Categories.Persistence;
-using Bidro.Listings;
 using Bidro.LocationComponents.Persistence;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -27,21 +24,12 @@ builder.Services.AddScoped<ILocationComponentsDb, LocationComponentsDb>(provider
     return new LocationComponentsDb(options);
 });
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<EntityDbContext>()
+    .AddDefaultTokenProviders();
+
 var app = builder.Build();
 
-var categoriesApi = app.MapGroup("/api/categories");
-categoriesApi.MapPost("", async ([FromServices] ICategoriesDb categoriesDb, Category category) =>
-{
-    var response = await categoriesDb.AddCategory(category);
-    return Results.Created($"/api/categories/{category.Id}", category);
-});
-
-var countiesApi = app.MapGroup("/api/counties");
-countiesApi.MapPost("", async ([FromServices] ILocationComponentsDb locationsDb, County county) =>
-{
-    var response = await locationsDb.AddCounty(county);
-    return Results.Created($"/api/counties/{county.Id}", county);
-});
 
 
 

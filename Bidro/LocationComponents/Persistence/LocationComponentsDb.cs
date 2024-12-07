@@ -1,6 +1,5 @@
 using System.Net;
 using Bidro.Config;
-using Bidro.Config.LocationComponents;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

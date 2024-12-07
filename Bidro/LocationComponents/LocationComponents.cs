@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Bidro.Firms;
 using Bidro.Listings;
 
-namespace Bidro.Config.LocationComponents;
+namespace Bidro.LocationComponents;
 
 public record County(Guid Id, string Name, string Code)
 {
@@ -14,6 +15,7 @@ public record County(Guid Id, string Name, string Code)
     
     public ICollection<City>? Cities { get; set; }
     public ICollection<ListingComponents.Location>? Locations { get; set; }
+    public ICollection<FirmLocation>? FirmLocations { get; set; }
 };
 
 public record City(Guid Id, string Name)
@@ -26,5 +28,6 @@ public record City(Guid Id, string Name)
     
     public County? County { get; set; }
     public ICollection<ListingComponents.Location>? Locations { get; set; }
+    public ICollection<FirmLocation>? FirmLocations { get; set; }
 };
 
