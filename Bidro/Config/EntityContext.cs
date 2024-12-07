@@ -4,6 +4,7 @@ using Bidro.FrontEndBuildBlocks.FormQuestion;
 using Bidro.Listings;
 using Bidro.LocationComponents;
 using Bidro.Reviews;
+using Bidro.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -24,6 +25,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     public DbSet<FirmLocation> FirmLocations { get; set; }
     public DbSet<FirmContact> FirmContacts { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<UserTypes.FirmAccount> FirmAccounts { get; set; }
+    public DbSet<UserTypes.UserAccount> UserAccounts { get; set; }
+    public DbSet<UserTypes.AdminAccount> AdminAccounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -149,6 +153,30 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Review>().Property(r => r.Date).IsRequired();
         modelBuilder.Entity<Review>().HasOne(r => r.Firm).WithMany(f => f.Reviews);
         
+        modelBuilder.Entity<UserTypes.UserAccount>().ToTable("AspNetUsers");
+        modelBuilder.Entity<UserTypes.UserAccount>().HasKey(u => u.Id);
+        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.UserName).IsRequired();
+        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.FirstName).IsRequired();
+        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.LastName).IsRequired();
+        
+        modelBuilder.Entity<UserTypes.FirmAccount>().ToTable("FirmAccounts")
+            .HasKey(u => u.UserAccountId);
+        modelBuilder.Entity<UserTypes.FirmAccount>().HasOne(u => u.Firm).WithMany(f => f.Users)
+            .HasForeignKey(u => u.FirmId);
+        modelBuilder.Entity<UserTypes.FirmAccount>().HasOne(u => u.UserAccount)
+            .WithOne()
+            .HasForeignKey<UserTypes.FirmAccount>(u => u.UserAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<UserTypes.AdminAccount>().ToTable("AdminAccounts");
+        modelBuilder.Entity<UserTypes.AdminAccount>()
+            .HasOne(u => u.UserAccount)
+            .WithOne()
+            .HasForeignKey<UserTypes.AdminAccount>(u => u.UserAccountId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

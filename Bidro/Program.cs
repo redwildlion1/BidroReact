@@ -2,6 +2,7 @@
 using Bidro.Config;
 using Bidro.FrontEndBuildBlocks.Categories.Persistence;
 using Bidro.LocationComponents.Persistence;
+using Bidro.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,7 @@ builder.Services.AddScoped<ILocationComponentsDb, LocationComponentsDb>(provider
     return new LocationComponentsDb(options);
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<UserTypes.UserAccount, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<EntityDbContext>()
     .AddDefaultTokenProviders();
 

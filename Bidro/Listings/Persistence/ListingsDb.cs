@@ -1,6 +1,3 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Bidro.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,5 +23,24 @@ public class ListingsDb(DbContextOptions<EntityDbContext> options) : IListingsDb
             return new NotFoundResult();
         }
         return new OkObjectResult(listing);
+    }
+    
+
+    public async Task<IActionResult> UpdateListing(Listing listing)
+    {
+        await using var db = new EntityDbContext(options);
+        db.Listings.Update(listing);
+        await db.SaveChangesAsync();
+        return new OkResult();
+    }
+
+    public async Task<IActionResult> DeleteListing(Guid listingId)
+    {
+        await using var db = new EntityDbContext(options);
+        var listing = await db.Listings.FirstOrDefaultAsync(l => l.Id == listingId);
+        if (listing == null) return new NotFoundResult();
+        db.Listings.Remove(listing);
+        await db.SaveChangesAsync();
+        return new OkResult();
     }
 }
