@@ -2,6 +2,7 @@ using Bidro.Users;
 using Bidro.Users.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Bidro.Controllers;
 
@@ -12,6 +13,7 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
     : ControllerBase
 {
     [HttpPost("register")]
+    [SwaggerOperation(Summary = "Register a new user account")]
     public async Task<IActionResult> Register(UserDTOs.RegisterDTO dto)
     {
         var user = new UserTypes.UserAccount(dto.Username, dto.FirstName, dto.LastName)
@@ -28,6 +30,7 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
     }
     
     [HttpPost("registerFirmAccount")]
+    [SwaggerOperation(Summary = "Register a new firm account")]
     public async Task<IActionResult> RegisterFirmAccount(UserDTOs.RegisterFirmAccountDTO dto)
     {
         var userAccount = new UserTypes.UserAccount(dto.Username, dto.FirstName, dto.LastName)
@@ -46,6 +49,7 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
     }
 
     [HttpPost("registerAdminAccount")]
+    [SwaggerOperation(Summary = "Register a new admin account")]
     public async Task<IActionResult> RegisterAdminAccount(UserDTOs.RegisterAdminAccountDTO dto)
     {
         var userAccount = new UserTypes.UserAccount(dto.Username, dto.FirstName, dto.LastName)
@@ -64,6 +68,7 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
     }
     
     [HttpPost("login")]
+    [SwaggerOperation(Summary = "Login to an account")]
     public async Task<IActionResult> Login(UserDTOs.LoginDTO dto)
     {
         var result = await signInManager.PasswordSignInAsync(dto.Username, dto.Password, dto.RememberMe, false);
@@ -76,6 +81,7 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
     }
     
     [HttpPost("logout")]
+    [SwaggerOperation(Summary = "Logout of an account")]
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();

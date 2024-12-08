@@ -6,7 +6,7 @@ namespace Bidro.FrontEndBuildBlocks.FormQuestions.Persistence;
 
 public class FormQuestionsDb(DbContextOptions<EntityDbContext> options) : IFormQuestionsDb
 {
-    public async Task<IActionResult> AddFormQuestion(FormQuestion.FormQuestion formQuestion)
+    public async Task<IActionResult> AddFormQuestion(FormQuestion formQuestion)
     {
         await using var db = new EntityDbContext(options);
         await db.FormQuestions.AddAsync(formQuestion);

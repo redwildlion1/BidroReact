@@ -1,8 +1,7 @@
 using Bidro.FrontEndBuildBlocks.Categories;
-using Bidro.FrontEndBuildBlocks.Forms;
 using Bidro.Listings;
 
-namespace Bidro.FrontEndBuildBlocks.FormQuestion;
+namespace Bidro.FrontEndBuildBlocks.FormQuestions;
 
 public sealed record FormQuestion(
     string Label,

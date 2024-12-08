@@ -1,6 +1,7 @@
-using Bidro.FrontEndBuildBlocks.Categories;
+using Bidro.FrontEndBuildBlocks.Categories.DTOs;
 using Bidro.FrontEndBuildBlocks.Categories.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Bidro.Controllers;
 
@@ -9,8 +10,10 @@ namespace Bidro.Controllers;
 public class CategoriesController(ICategoriesDb categoriesDb) : ControllerBase
 {
     [HttpPost("addCategory")]
-    public async Task<IActionResult> AddCategory(Category category)
+    [SwaggerOperation (Summary = "Add a new category")]
+    public async Task<IActionResult> AddCategory(AddCategoryDTO categoryDTO)
     {
+        var category = categoryDTO.ToCategory();
         return await categoriesDb.AddCategory(category);
     }
     

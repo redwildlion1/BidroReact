@@ -1,4 +1,3 @@
-using System.Net;
 using Bidro.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,5 +21,19 @@ public class LocationComponentsDb(DbContextOptions<EntityDbContext> options) : I
         await db.Cities.AddAsync(city);
         await db.SaveChangesAsync();
         return new OkResult();
+    }
+
+    public async Task<IActionResult> GetAllCounties()
+    {
+        await using var db = new EntityDbContext(options);
+        var counties = await db.Counties.ToListAsync();
+        return new OkObjectResult(counties);
+    }
+
+    public async Task<IActionResult> GetAllCities()
+    {
+        await using var db = new EntityDbContext(options);
+        var cities = await db.Cities.ToListAsync();
+        return new OkObjectResult(cities);
     }
 }

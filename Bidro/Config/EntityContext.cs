@@ -1,6 +1,6 @@
 using Bidro.Firms;
 using Bidro.FrontEndBuildBlocks.Categories;
-using Bidro.FrontEndBuildBlocks.FormQuestion;
+using Bidro.FrontEndBuildBlocks.FormQuestions;
 using Bidro.Listings;
 using Bidro.LocationComponents;
 using Bidro.Reviews;
@@ -33,12 +33,15 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     {
         
         modelBuilder.Entity<Category>().HasKey(c => c.Id);
-        modelBuilder.Entity<Category>().Property(c => c.Name).IsRequired();
+        modelBuilder.Entity<Category>().Property(c => c.Name)
+            .IsRequired();
+        modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
         modelBuilder.Entity<Category>().Property(c => c.Icon).IsRequired();
         modelBuilder.Entity<Category>().HasMany(c => c.Subcategories).WithOne(s => s.ParentCategory);
 
         modelBuilder.Entity<Subcategory>().HasKey(s => s.Id);
         modelBuilder.Entity<Subcategory>().Property(s => s.Name).IsRequired();
+        modelBuilder.Entity<Subcategory>().HasIndex(s => s.Name).IsUnique();
         modelBuilder.Entity<Subcategory>().Property(s => s.Icon).IsRequired();
         modelBuilder.Entity<Subcategory>()
             .HasOne(s => s.ParentCategory)
@@ -53,6 +56,8 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<County>()
             .Property(c => c.Name)
             .IsRequired();
+        modelBuilder.Entity<County>().HasIndex(c => c.Name).IsUnique();
+        modelBuilder.Entity<County>().HasIndex(c => c.Code).IsUnique();
         modelBuilder.Entity<County>()
             .HasMany(c => c.Cities)
             .WithOne(c => c.County);
@@ -112,6 +117,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .ValueGeneratedOnAdd()
             .IsRequired();
         modelBuilder.Entity<Firm>().Property(f => f.Name).IsRequired();
+        modelBuilder.Entity<Firm>().HasIndex(f => f.Name).IsUnique();
         modelBuilder.Entity<Firm>().HasOne(f => f.Location).WithOne(l => l.Firm)
             .HasForeignKey<Firm>(f => f.LocationId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -140,8 +146,11 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .ValueGeneratedOnAdd()
             .IsRequired();
         modelBuilder.Entity<FirmContact>().Property(f => f.Email).IsRequired();
+        modelBuilder.Entity<FirmContact>().HasIndex(f => f.Email).IsUnique();
         modelBuilder.Entity<FirmContact>().Property(f => f.Phone).IsRequired();
+        modelBuilder.Entity<FirmContact>().HasIndex(f => f.Phone).IsUnique();
         modelBuilder.Entity<FirmContact>().Property(f => f.Fax);
+        modelBuilder.Entity<FirmContact>().HasIndex(f => f.Fax).IsUnique();
         modelBuilder.Entity<FirmContact>().HasOne(f => f.Firm).WithOne(f => f.Contact);
         
         modelBuilder.Entity<Review>().HasKey(r => r.Id);

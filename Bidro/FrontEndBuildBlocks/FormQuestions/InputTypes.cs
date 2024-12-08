@@ -1,4 +1,4 @@
-namespace Bidro.FrontEndBuildBlocks.Forms;
+namespace Bidro.FrontEndBuildBlocks.FormQuestions;
 
 public enum InputTypes
 {

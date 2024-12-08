@@ -1,4 +1,5 @@
 using Bidro.Config;
+using Bidro.Firms.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,17 +35,30 @@ public class FirmsDb(DbContextOptions<EntityDbContext> options) : IFirmsDb
         return new OkObjectResult(firm);
     }
 
-    public async Task<IActionResult> CreateFirm(Firm firm)
+    public async Task<IActionResult> CreateFirm(AddFirmDTO firmDTO)
     {
         await using var db = new EntityDbContext(options);
-       
+
         // Add related entities
-        await db.FirmLocations.AddAsync(firm.Location);
-        await db.FirmContacts.AddAsync(firm.Contact);
+        var location = firmDTO.Location.ToFirmLocation();
+        var contact = firmDTO.Contact.ToFirmContact();
+
+        await db.FirmLocations.AddAsync(location);
+        await db.FirmContacts.AddAsync(contact);
+
+        // Create firm entity
+        var firm = new Firm(
+            firmDTO.Name, firmDTO.Description, firmDTO.Logo,
+            firmDTO.Website, firmDTO.CategoryIds, contact.Id,
+            location.Id
+        );
         
         // Add firm
         await db.Firms.AddAsync(firm);
+
+        // Save all changes in one transaction
         await db.SaveChangesAsync();
+
         return new OkResult();
     }
 
