@@ -1,10 +1,6 @@
-using Bidro.Firms;
-using Bidro.FrontEndBuildBlocks.Categories;
-using Bidro.FrontEndBuildBlocks.FormQuestions;
-using Bidro.Listings;
-using Bidro.LocationComponents;
-using Bidro.Reviews;
-using Bidro.Users;
+using Bidro.EntityObjects;
+using Bidro.Services.Implementations;
+using Bidro.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -31,7 +27,6 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
         modelBuilder.Entity<Category>().HasKey(c => c.Id);
         modelBuilder.Entity<Category>().Property(c => c.Name)
             .IsRequired();
@@ -97,6 +92,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Listing>().Property(l => l.Id)
             .ValueGeneratedOnAdd()
             .IsRequired();
+        modelBuilder.Entity<Listing>().Property(l => l.Title).IsRequired();
+        modelBuilder.Entity<Listing>().HasOne(l => l.User).WithMany(u => u.Listings);
+        modelBuilder.Entity<Listing>().HasOne(l => l.Subcategory).WithMany(s => s.Listings);
         modelBuilder.Entity<Listing>().HasOne(l => l.Location).WithOne(l => l.Listing);
         modelBuilder.Entity<Listing>().HasOne(l => l.Contact).WithOne(l => l.Listing);
         modelBuilder.Entity<Listing>().HasMany(l => l.FormAnswers).WithOne(f => f.Listing);
@@ -106,12 +104,11 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .ValueGeneratedOnAdd()
             .IsRequired();
         modelBuilder.Entity<FormQuestion>().Property(q => q.Label).IsRequired();
-        modelBuilder.Entity<FormQuestion>().Property(q => q.Value).IsRequired();
         modelBuilder.Entity<FormQuestion>().HasMany(q => q.Answers)
             .WithOne(a => a.Question)
             .HasForeignKey(a => a.FormQuestionId);
         modelBuilder.Entity<FormQuestion>().HasOne(q => q.Subcategory).WithMany(s => s.FormQuestions);
-        
+
         modelBuilder.Entity<Firm>().HasKey(f => f.Id);
         modelBuilder.Entity<Firm>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
@@ -124,13 +121,13 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Firm>().HasOne(f => f.Contact).WithOne(c => c.Firm)
             .HasForeignKey<Firm>(f => f.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<Firm>().HasMany(f => f.Categories).WithMany(c => c.Firms)
+        modelBuilder.Entity<Firm>().HasMany(f => f.Subcategories).WithMany(c => c.Firms)
             .UsingEntity<Dictionary<string, object>>("FirmCategory",
-                r => r.HasOne<Category>().WithMany().HasForeignKey("CategoryId"),
+                r => r.HasOne<Subcategory>().WithMany().HasForeignKey("CategoryId"),
                 l => l.HasOne<Firm>().WithMany().HasForeignKey("FirmId"));
         modelBuilder.Entity<Firm>().HasMany(f => f.Reviews).WithOne(r => r.Firm);
         modelBuilder.Entity<Firm>().HasMany(f => f.Users).WithOne(u => u.Firm);
-        
+
         modelBuilder.Entity<FirmLocation>().HasKey(f => f.Id);
         modelBuilder.Entity<FirmLocation>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
@@ -140,7 +137,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<FirmLocation>().HasOne(f => f.City).WithMany(c => c.FirmLocations);
         modelBuilder.Entity<FirmLocation>().HasOne(f => f.County).WithMany(c => c.FirmLocations);
         modelBuilder.Entity<FirmLocation>().HasOne(f => f.Firm).WithOne(f => f.Location);
-        
+
         modelBuilder.Entity<FirmContact>().HasKey(f => f.Id);
         modelBuilder.Entity<FirmContact>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
@@ -152,7 +149,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<FirmContact>().Property(f => f.Fax);
         modelBuilder.Entity<FirmContact>().HasIndex(f => f.Fax).IsUnique();
         modelBuilder.Entity<FirmContact>().HasOne(f => f.Firm).WithOne(f => f.Contact);
-        
+
         modelBuilder.Entity<Review>().HasKey(r => r.Id);
         modelBuilder.Entity<Review>().Property(r => r.Id)
             .ValueGeneratedOnAdd()
@@ -161,7 +158,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Review>().Property(r => r.Rating).IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.Date).IsRequired();
         modelBuilder.Entity<Review>().HasOne(r => r.Firm).WithMany(f => f.Reviews);
-        
+
         modelBuilder.Entity<UserTypes.UserAccount>().ToTable("AspNetUsers");
         modelBuilder.Entity<UserTypes.UserAccount>().HasKey(u => u.Id);
         modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.Id)
@@ -170,7 +167,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.UserName).IsRequired();
         modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.FirstName).IsRequired();
         modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.LastName).IsRequired();
-        
+
         modelBuilder.Entity<UserTypes.FirmAccount>().ToTable("FirmAccounts")
             .HasKey(u => u.UserAccountId);
         modelBuilder.Entity<UserTypes.FirmAccount>().HasOne(u => u.Firm).WithMany(f => f.Users)
@@ -179,7 +176,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .WithOne()
             .HasForeignKey<UserTypes.FirmAccount>(u => u.UserAccountId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         modelBuilder.Entity<UserTypes.AdminAccount>().ToTable("AdminAccounts");
         modelBuilder.Entity<UserTypes.AdminAccount>()
             .HasOne(u => u.UserAccount)
@@ -195,7 +192,7 @@ public class EntityDbContextFactory : IDesignTimeDbContextFactory<EntityDbContex
     {
         var optionsBuilder = new DbContextOptionsBuilder<EntityDbContext>();
         optionsBuilder.UseNpgsql(@"Host=localhost;Database=bidro;Username=postgres;Password=admin");
-            
+
         return new EntityDbContext(optionsBuilder.Options);
     }
 }

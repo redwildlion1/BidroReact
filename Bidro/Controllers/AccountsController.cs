@@ -1,5 +1,7 @@
-using Bidro.Users;
-using Bidro.Users.Persistence;
+using Bidro.DTOs.UserDTOs;
+using Bidro.Services;
+using Bidro.Services.Implementations;
+using Bidro.Types;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -8,8 +10,10 @@ namespace Bidro.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
-    SignInManager<UserTypes.UserAccount> signInManager, IUsersDb usersDb)
+public class AccountsController(
+    UserManager<UserTypes.UserAccount> userManager,
+    SignInManager<UserTypes.UserAccount> signInManager,
+    IUsersService usersService)
     : ControllerBase
 {
     [HttpPost("register")]
@@ -24,11 +28,10 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
         };
         var result = await userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded) return Unauthorized();
-        await signInManager.SignInAsync(user, isPersistent: false);
+        await signInManager.SignInAsync(user, false);
         return Ok();
-
     }
-    
+
     [HttpPost("registerFirmAccount")]
     [SwaggerOperation(Summary = "Register a new firm account")]
     public async Task<IActionResult> RegisterFirmAccount(UserDTOs.RegisterFirmAccountDTO dto)
@@ -41,10 +44,10 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
         };
         var firmAccount = new UserTypes.FirmAccount(dto.FirmId);
 
-        var result = await userManager.CreateFirmAccountAsync(userAccount, dto.Password, firmAccount, usersDb);
+        var result = await userManager.CreateFirmAccountAsync(userAccount, dto.Password, firmAccount, usersService);
         if (!result.Succeeded) return Unauthorized();
 
-        await signInManager.SignInAsync(userAccount, isPersistent: false);
+        await signInManager.SignInAsync(userAccount, false);
         return Ok();
     }
 
@@ -60,26 +63,23 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
         };
         var adminAccount = new UserTypes.AdminAccount(dto.CreatedById);
 
-        var result = await userManager.CreateAdminAccountAsync(userAccount, dto.Password, adminAccount, usersDb);
+        var result = await userManager.CreateAdminAccountAsync(userAccount, dto.Password, adminAccount, usersService);
         if (!result.Succeeded) return Unauthorized();
 
-        await signInManager.SignInAsync(userAccount, isPersistent: false);
+        await signInManager.SignInAsync(userAccount, false);
         return Ok();
     }
-    
+
     [HttpPost("login")]
     [SwaggerOperation(Summary = "Login to an account")]
     public async Task<IActionResult> Login(UserDTOs.LoginDTO dto)
     {
         var result = await signInManager.PasswordSignInAsync(dto.Username, dto.Password, dto.RememberMe, false);
-        if (result.Succeeded)
-        {
-            return Ok();
-        }
+        if (result.Succeeded) return Ok();
 
         return Unauthorized();
     }
-    
+
     [HttpPost("logout")]
     [SwaggerOperation(Summary = "Logout of an account")]
     public async Task<IActionResult> Logout()
@@ -87,5 +87,4 @@ public class AccountsController(UserManager<UserTypes.UserAccount> userManager,
         await signInManager.SignOutAsync();
         return Ok();
     }
-    
 }

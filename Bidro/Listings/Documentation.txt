@@ -1,1 +1,0 @@
-This directory should house everything related to the Listings directly, such as the search page, the listing page and the listing creation page.(The APIs for these)

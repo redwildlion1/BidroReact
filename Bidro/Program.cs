@@ -1,9 +1,7 @@
-
 using Bidro.Config;
-using Bidro.Firms.Persistence;
-using Bidro.FrontEndBuildBlocks.Categories.Persistence;
-using Bidro.LocationComponents.Persistence;
-using Bidro.Users;
+using Bidro.Services;
+using Bidro.Services.Implementations;
+using Bidro.Types;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
@@ -21,23 +19,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddDbContext<EntityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<ICategoriesDb, CategoriesDb>();
-builder.Services.AddScoped<ILocationComponentsDb, LocationComponentsDb>(provider =>
-{
-    var options = provider.GetRequiredService<DbContextOptions<EntityDbContext>>();
-    return new LocationComponentsDb(options);
-});
-builder.Services.AddScoped<IFirmsDb, FirmsDb>(provider =>
-{
-    var options = provider.GetRequiredService<DbContextOptions<EntityDbContext>>();
-    return new FirmsDb(options);
-});
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<ILocationComponentsService, LocationComponentsService>();
+builder.Services.AddScoped<IFirmsService, FirmsService>();
+builder.Services.AddScoped<IReviewsService, ReviewsService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 
 // Add Swagger services
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bidro API", Version = "v1" });
-});
+builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Bidro API", Version = "v1" }); });
 
 // Configure route options to register the regex constraint
 builder.Services.Configure<RouteOptions>(options =>
@@ -65,8 +54,6 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseRouting();
-
-
 
 app.MapControllers();
 

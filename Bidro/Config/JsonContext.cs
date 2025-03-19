@@ -1,9 +1,7 @@
 using System.Text.Json.Serialization;
-using Bidro.FrontEndBuildBlocks.Categories;
-using Bidro.FrontEndBuildBlocks.Categories.Persistence;
-using Bidro.FrontEndBuildBlocks.FormQuestions;
-using Bidro.Listings;
-using Bidro.LocationComponents;
+using Bidro.EntityObjects;
+using Bidro.Services;
+using Bidro.Services.Implementations;
 
 namespace Bidro.Config;
 
@@ -28,8 +26,8 @@ namespace Bidro.Config;
 [JsonSerializable(typeof(List<FormQuestion>))]
 [JsonSerializable(typeof(FormQuestion))]
 [JsonSerializable(typeof(EntityDbContext))]
-[JsonSerializable(typeof(CategoriesDb))]
-[JsonSerializable(typeof(ICategoriesDb))]
+[JsonSerializable(typeof(CategoriesService))]
+[JsonSerializable(typeof(ICategoriesService))]
 public partial class AppJsonContext : JsonSerializerContext
 {
 }

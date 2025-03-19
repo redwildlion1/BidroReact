@@ -1,6 +1,0 @@
-This directory should house everything related to the User directly, such as login, registration and profile pages.
-There should be a README.md file in this directory that explains how to use the components in this directory.
-This uses the .NET Identity framework for user management.
-```
-
-You should find here everything for a normal client, a firm and an admin.
