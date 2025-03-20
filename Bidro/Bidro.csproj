@@ -38,8 +38,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="MIgrations\"/>
-        <Folder Include="Validation\DomainValidators\"/>
+        <Folder Include="Migrations\"/>
     </ItemGroup>
 
 </Project>

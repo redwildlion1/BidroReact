@@ -1,5 +1,4 @@
 using Bidro.DTOs.FirmDTOs;
-using Bidro.EntityObjects;
 using Bidro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -33,9 +32,9 @@ public class FirmsController(IFirmsService firmsService) : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(Summary = "Post a new firm")]
-    public async Task<IActionResult> PostFirm(Firm firm)
+    public async Task<IActionResult> PostFirm(PostDTOs.PostFirmDTO postFirmDTO)
     {
-        return await firmsService.PostFirm(firm);
+        return await firmsService.PostFirm(postFirmDTO);
     }
 
     [HttpPut("updateName")]

@@ -1,6 +1,5 @@
 using Bidro.Config;
 using Bidro.DTOs.FirmDTOs;
-using Bidro.EntityObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,11 +42,11 @@ public class FirmsService(EntityDbContext dbContext) : IFirmsService
         return new OkObjectResult(firms);
     }
 
-    public async Task<IActionResult> PostFirm(Firm firm)
+    public async Task<IActionResult> PostFirm(PostDTOs.PostFirmDTO postFirmDTO)
     {
-        await dbContext.Firms.AddAsync(firm);
+        await dbContext.Firms.AddAsync(postFirmDTO.ToFirm());
         await dbContext.SaveChangesAsync();
-        return new OkResult();
+        return new OkObjectResult(postFirmDTO.Base.Name);
     }
 
     public async Task<IActionResult> UpdateFirmName(UpdateDTOs.UpdateFirmNameDTO updateFirmNameDTO)

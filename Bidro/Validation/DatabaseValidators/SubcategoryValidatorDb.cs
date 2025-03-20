@@ -1,17 +1,22 @@
 using Bidro.Config;
 using Bidro.EntityObjects;
+using Bidro.Validation.ValidationObjects;
 
 namespace Bidro.Validation.DatabaseValidators;
 
 public class SubcategoryValidatorDb(EntityDbContext dbContext)
 {
-    public async Task<ValidationResult> ValidateSubcategoryAsync(Subcategory subcategory)
+    public async Task<ValidationResult> ValidateSubcategoryAsync(SubcategoryValidityObjectDb subDb)
     {
-        var chainValidator = new ChainValidatorDb<Subcategory>()
-            .AddValidator(new IsUniqueValidatorDb<Subcategory>(dbContext.Subcategories, nameof(Subcategory.Name)))
+        var chainValidator = new ChainValidatorDb<SubcategoryValidityObjectDb>()
             .AddValidator(
-                new IsUniqueValidatorDb<Subcategory>(dbContext.Subcategories, nameof(Subcategory.Identifier)));
+                new IsUniqueValidatorDb<SubcategoryValidityObjectDb, Subcategory>
+                    (dbContext.Subcategories, nameof(Subcategory.Name), validityObject => validityObject.Name))
+            .AddValidator(
+                new IsUniqueValidatorDb<SubcategoryValidityObjectDb, Subcategory>
+                (dbContext.Subcategories, nameof(Subcategory.Identifier),
+                    validityObject => validityObject.Identifier));
 
-        return await chainValidator.ValidateAsync(subcategory);
+        return await chainValidator.ValidateAsync(subDb);
     }
 }

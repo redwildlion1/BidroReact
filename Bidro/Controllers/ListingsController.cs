@@ -1,4 +1,4 @@
-using Bidro.EntityObjects;
+using Bidro.DTOs.ListingDTOs;
 using Bidro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,7 +11,7 @@ public class ListingsController(IListingsService listingsService) : ControllerBa
 {
     [HttpPost("addListing")]
     [SwaggerOperation(Summary = "Add a new listing")]
-    public async Task<IActionResult> AddListing(Listing listing)
+    public async Task<IActionResult> AddListing(PostDTOs.PostListingDTO listing)
     {
         return await listingsService.AddListing(listing);
     }

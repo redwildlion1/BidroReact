@@ -6,6 +6,7 @@ namespace Bidro.Validation.DatabaseValidators;
 
 public class ReviewValidatorDb(EntityDbContext dbContext)
 {
+    //TODO: Add ExistsValidatorDb for Review
     public async Task<ValidationResult> ValidateAsync(Review review)
     {
         var chainValidator = new ChainValidatorDb<Review>()

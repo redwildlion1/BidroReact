@@ -20,9 +20,9 @@ public class GetDTOs
                 listing.Title,
                 listing.SubcategoryId,
                 listing.UserId,
-                GetLocationDTO.FromLocation(listing.Location),
-                GetContactDTO.FromContact(listing.Contact),
-                listing.FormAnswers.Select(GetFormAnswerDTO.FromFormAnswer).ToList()
+                GetLocationDTO.FromLocation(listing.Location!),
+                GetContactDTO.FromContact(listing.Contact!),
+                listing.FormAnswers!.Select(GetFormAnswerDTO.FromFormAnswer).ToList()
             );
         }
     }
@@ -34,13 +34,13 @@ public class GetDTOs
         string PostalCode
     )
     {
-        public static GetLocationDTO FromLocation(ListingComponents.Location location)
+        public static GetLocationDTO FromLocation(ListingLocation listingLocation)
         {
             return new GetLocationDTO(
-                location.CountyId,
-                location.CityId,
-                location.Address,
-                location.PostalCode
+                listingLocation.CountyId,
+                listingLocation.CityId,
+                listingLocation.Address,
+                listingLocation.PostalCode
             );
         }
     }
@@ -50,12 +50,12 @@ public class GetDTOs
         string Email,
         string Phone)
     {
-        public static GetContactDTO FromContact(ListingComponents.Contact contact)
+        public static GetContactDTO FromContact(ListingContact listingContact)
         {
             return new GetContactDTO(
-                contact.Name,
-                contact.Email,
-                contact.Phone
+                listingContact.Name,
+                listingContact.Email,
+                listingContact.Phone
             );
         }
     }
@@ -66,13 +66,13 @@ public class GetDTOs
         Guid FormQuestionId,
         FormQuestionsDTOs.GetDTOs.GetFormQuestionDTO Question)
     {
-        public static GetFormAnswerDTO FromFormAnswer(ListingComponents.FormAnswer formAnswer)
+        public static GetFormAnswerDTO FromFormAnswer(FormAnswer formAnswer)
         {
             return new GetFormAnswerDTO(
                 formAnswer.Value,
                 formAnswer.Id,
                 formAnswer.FormQuestionId,
-                FormQuestionsDTOs.GetDTOs.GetFormQuestionDTO.FromFormQuestion(formAnswer.Question)
+                FormQuestionsDTOs.GetDTOs.GetFormQuestionDTO.FromFormQuestion(formAnswer.Question!)
             );
         }
     }

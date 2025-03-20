@@ -7,20 +7,32 @@ public class PostDTOs
     public record PostFirmDTO(
         PostFirmBaseDTO Base,
         PostFirmContactDTO Contact,
-        PostFirmLocationDTO Location);
+        PostFirmLocationDTO Location)
+    {
+        public Firm ToFirm()
+        {
+            var baseFirm = new Firm(Base.Name, Base.Description, Base.Logo, Base.Website, Base.CategoryIds)
+            {
+                Contact = Contact.ToFirmContact(),
+                Location = Location.ToFirmLocation()
+            };
+
+            return baseFirm;
+        }
+    }
 
     public record PostFirmBaseDTO(
         string Name,
         string Description,
         string Logo,
-        string? Website,
-        List<string>? CategoryIds);
+        string Website,
+        List<Guid> CategoryIds);
 
     public record PostFirmLocationDTO(
         string Address,
         Guid CityId,
         Guid CountyId,
-        string? PostalCode,
+        string PostalCode,
         string? Latitude,
         string? Longitude)
     {

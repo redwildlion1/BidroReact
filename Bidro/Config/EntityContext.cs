@@ -12,9 +12,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     public DbSet<Subcategory> Subcategories { get; set; }
     public DbSet<County> Counties { get; set; }
     public DbSet<City> Cities { get; set; }
-    public DbSet<ListingComponents.Location> Locations { get; set; }
-    public DbSet<ListingComponents.Contact> Contacts { get; set; }
-    public DbSet<ListingComponents.FormAnswer> FormAnswers { get; set; }
+    public DbSet<ListingLocation> Locations { get; set; }
+    public DbSet<ListingContact> Contacts { get; set; }
+    public DbSet<FormAnswer> FormAnswers { get; set; }
     public DbSet<Listing> Listings { get; set; }
     public DbSet<FormQuestion> FormQuestions { get; set; }
     public DbSet<Firm> Firms { get; set; }
@@ -72,19 +72,19 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<City>().HasOne(c => c.County).WithMany(c => c.Cities);
         modelBuilder.Entity<City>().HasMany(c => c.Locations).WithOne(c => c.City);
 
-        modelBuilder.Entity<ListingComponents.Location>().HasKey(l => l.ListingId);
-        modelBuilder.Entity<ListingComponents.Location>().HasOne(l => l.Listing).WithOne(l => l.Location);
-        modelBuilder.Entity<ListingComponents.Location>().HasOne(l => l.County).WithMany(c => c.Locations);
-        modelBuilder.Entity<ListingComponents.Location>().HasOne(l => l.City).WithMany(c => c.Locations);
+        modelBuilder.Entity<ListingLocation>().HasKey(l => l.ListingId);
+        modelBuilder.Entity<ListingLocation>().HasOne(l => l.Listing).WithOne(l => l.Location);
+        modelBuilder.Entity<ListingLocation>().HasOne(l => l.County).WithMany(c => c.Locations);
+        modelBuilder.Entity<ListingLocation>().HasOne(l => l.City).WithMany(c => c.Locations);
 
-        modelBuilder.Entity<ListingComponents.Contact>().HasKey(c => c.ListingId);
-        modelBuilder.Entity<ListingComponents.Contact>().HasOne(c => c.Listing).WithOne(l => l.Contact);
+        modelBuilder.Entity<ListingContact>().HasKey(c => c.ListingId);
+        modelBuilder.Entity<ListingContact>().HasOne(c => c.Listing).WithOne(l => l.Contact);
 
-        modelBuilder.Entity<ListingComponents.FormAnswer>().HasKey(f => f.Id);
-        modelBuilder.Entity<ListingComponents.FormAnswer>()
+        modelBuilder.Entity<FormAnswer>().HasKey(f => f.Id);
+        modelBuilder.Entity<FormAnswer>()
             .HasOne(f => f.Listing)
             .WithMany(l => l.FormAnswers);
-        modelBuilder.Entity<ListingComponents.FormAnswer>()
+        modelBuilder.Entity<FormAnswer>()
             .HasOne(f => f.Question)
             .WithMany(q => q.Answers);
 

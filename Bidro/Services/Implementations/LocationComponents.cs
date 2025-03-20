@@ -15,7 +15,7 @@ public record County(string Name, string Code)
     [StringLength(2)] public string Code { get; set; } = Code;
 
     public ICollection<City>? Cities { get; set; }
-    public ICollection<ListingComponents.Location>? Locations { get; set; }
+    public ICollection<ListingLocation>? Locations { get; set; }
     public ICollection<FirmLocation>? FirmLocations { get; set; }
 }
 
@@ -28,6 +28,6 @@ public record City(Guid CountyId, string Name)
     public string Name { get; set; } = Name;
     public Guid CountyId { get; set; } = CountyId;
     public County? County { get; set; }
-    public ICollection<ListingComponents.Location>? Locations { get; set; }
+    public ICollection<ListingLocation>? Locations { get; set; }
     public ICollection<FirmLocation>? FirmLocations { get; set; }
 }

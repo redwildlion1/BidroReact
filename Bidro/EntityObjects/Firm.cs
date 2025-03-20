@@ -10,10 +10,7 @@ public class Firm(
     string description,
     string logo,
     string? website,
-    List<Guid>? categoryIds,
-    int rating,
-    Guid contactId,
-    Guid locationId)
+    List<Guid>? categoryIds)
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,13 +26,16 @@ public class Firm(
 
     public bool IsVerified { get; set; } = false;
     public bool IsSuspended { get; set; } = false;
-    public Guid LocationId { get; set; } = locationId;
-    public Guid ContactId { get; set; } = contactId;
+
+    [Required] public Guid LocationId { get; set; }
+
+    [Required] public Guid ContactId { get; set; }
+
     public List<Guid>? CategoryIds { get; set; } = categoryIds;
     public FirmContact? Contact { get; set; }
     public FirmLocation? Location { get; set; }
     public List<Subcategory>? Subcategories { get; set; }
-    public int Rating { get; set; } = rating;
+    public int Rating { get; set; } = 0;
     public List<Review>? Reviews { get; set; }
     public List<UserTypes.FirmAccount>? Users { get; set; }
 }
@@ -44,7 +44,7 @@ public class FirmLocation(
     string address,
     Guid cityId,
     Guid countyId,
-    string? postalCode,
+    string postalCode,
     string? latitude,
     string? longitude)
 {
@@ -54,7 +54,7 @@ public class FirmLocation(
 
     [StringLength(50)] public string Address { get; set; } = address;
 
-    [StringLength(10)] public string? PostalCode { get; set; } = postalCode;
+    [StringLength(10)] public string PostalCode { get; set; } = postalCode;
 
     [StringLength(20)] public string? Latitude { get; set; } = latitude;
 

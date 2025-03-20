@@ -1,5 +1,5 @@
 using Bidro.Config;
-using Bidro.EntityObjects;
+using Bidro.DTOs.ListingDTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +7,9 @@ namespace Bidro.Services.Implementations;
 
 public class ListingsService(EntityDbContext db) : IListingsService
 {
-    public async Task<IActionResult> AddListing(Listing listing)
+    public async Task<IActionResult> AddListing(PostDTOs.PostListingDTO listing)
     {
-        await db.Listings.AddAsync(listing);
+        await db.Listings.AddAsync(listing.ToListing());
         await db.SaveChangesAsync();
         return new OkResult();
     }
@@ -21,13 +21,6 @@ public class ListingsService(EntityDbContext db) : IListingsService
         return new OkObjectResult(listing);
     }
 
-
-    public async Task<IActionResult> UpdateListing(Listing listing)
-    {
-        db.Listings.Update(listing);
-        await db.SaveChangesAsync();
-        return new OkResult();
-    }
 
     public async Task<IActionResult> DeleteListing(Guid listingId)
     {

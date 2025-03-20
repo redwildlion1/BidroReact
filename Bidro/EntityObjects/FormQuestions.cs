@@ -26,5 +26,5 @@ public record FormQuestion(
     [StringLength(50)] public string DefaultAnswer { get; set; } = DefaultAnswer;
 
     public Subcategory? Subcategory { get; set; }
-    public ICollection<ListingComponents.FormAnswer>? Answers { get; set; }
+    public ICollection<FormAnswer>? Answers { get; set; }
 }

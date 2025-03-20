@@ -36,16 +36,20 @@ public class ChainValidatorDb<T> : IValidatorDb<T> where T : class
     }
 }
 
-public class IsUniqueValidatorDb<T>(DbSet<T> dbSet, string propertyName)
-    : IValidatorDb<T> where T : class
+public class IsUniqueValidatorDb<TParent, TChild>(
+    DbSet<TChild> dbSet,
+    string propertyName,
+    Func<TParent, object> valueSelector)
+    : IValidatorDb<TParent>
+    where TParent : class
+    where TChild : class
 {
-    public async Task<ValidationResult> ValidateAsync(T entity)
+    public async Task<ValidationResult> ValidateAsync(TParent entity)
     {
-        var property = typeof(T).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+        var value = valueSelector(entity);
+        var property = typeof(TChild).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
         if (property == null)
-            throw new ArgumentException($"Property '{propertyName}' not found on type '{typeof(T).Name}'.");
-
-        var value = property.GetValue(entity);
+            throw new ArgumentException($"Property '{propertyName}' not found on type '{typeof(TChild).Name}'.");
 
         var existingEntity = await dbSet.FirstOrDefaultAsync(e => property.GetValue(e)!.Equals(value));
         var validationResult = new ValidationResult { IsValid = existingEntity == null };
