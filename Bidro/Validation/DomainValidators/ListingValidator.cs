@@ -1,8 +1,8 @@
 using Bidro.DTOs.ListingDTOs;
 
-namespace Bidro.Validation.DomainValidators.PostValidators;
+namespace Bidro.Validation.DomainValidators;
 
-public class ListingPostValidator
+public class ListingValidator
 {
     public async Task<ValidationResult> ValidateListingAsync(PostDTOs.PostListingDTO postListingDTO)
     {

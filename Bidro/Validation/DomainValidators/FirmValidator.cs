@@ -1,8 +1,8 @@
 using Bidro.DTOs.FirmDTOs;
 
-namespace Bidro.Validation.DomainValidators.PostValidators;
+namespace Bidro.Validation.DomainValidators;
 
-public class FirmPostValidator
+public class FirmValidator
 {
     public async Task<ValidationResult> ValidateFirmBaseAsync(PostDTOs.PostFirmBaseDTO firm)
     {

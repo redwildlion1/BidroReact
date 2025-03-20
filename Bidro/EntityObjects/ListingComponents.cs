@@ -8,9 +8,9 @@ public sealed record ListingLocation(
     Guid CountyId,
     Guid CityId,
     string Address,
-    string PostalCode,
-    Guid ListingId)
+    string PostalCode)
 {
+    [Required] public Guid ListingId { get; set; }
     [Required] public County? County { get; init; }
 
     [Required] public City? City { get; init; }
@@ -18,9 +18,10 @@ public sealed record ListingLocation(
     [Required] public Listing? Listing { get; init; }
 }
 
-public sealed record ListingContact(string Name, string Email, string Phone, Guid ListingId)
+public sealed record ListingContact(string Name, string Email, string Phone)
 {
-    public required Listing Listing { get; init; }
+    [Required] public Guid ListingId { get; set; }
+    public Listing? Listing { get; init; }
 }
 
 public sealed record FormAnswer(

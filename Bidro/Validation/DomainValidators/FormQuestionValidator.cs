@@ -1,8 +1,8 @@
 using Bidro.DTOs.FormQuestionsDTOs;
 
-namespace Bidro.Validation.DomainValidators.PostValidators;
+namespace Bidro.Validation.DomainValidators;
 
-public class FormQuestionPostValidator
+public class FormQuestionValidator
 {
     public async Task<ValidationResult> ValidateFormQuestionAsync(PostDTOs.PostFormQuestionDTO formQuestion)
     {

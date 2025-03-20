@@ -1,9 +1,9 @@
 using Bidro.Config;
 using Bidro.DTOs.CategoryDTOs;
 
-namespace Bidro.Validation.DomainValidators.PostValidators;
+namespace Bidro.Validation.DomainValidators;
 
-public class SubcategoryPostValidator
+public class SubcategoryValidator
 {
     public async Task<ValidationResult> ValidateSubcategoryAsync(PostDTOs.PostSubcategoryDTO subcategory)
     {
