@@ -12,4 +12,8 @@ public class UpdateDTOs
         bool IsRequired,
         Guid SubcategoryId,
         string DefaultAnswer = "");
+
+    public record UpdateFormQuestionsDTO(
+        List<UpdateFormQuestionDTO> FormQuestions,
+        Guid SubcategoryId);
 }

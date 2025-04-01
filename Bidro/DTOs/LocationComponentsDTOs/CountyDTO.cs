@@ -1,4 +1,4 @@
-using Bidro.Services.Implementations;
+using Bidro.EntityObjects;
 
 namespace Bidro.DTOs.LocationComponentsDTOs;
 

@@ -1,8 +1,6 @@
 using Bidro.EntityObjects;
-using Bidro.Services.Implementations;
 using Bidro.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace Bidro.Config;
 
@@ -12,8 +10,8 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     public DbSet<Subcategory> Subcategories { get; set; }
     public DbSet<County> Counties { get; set; }
     public DbSet<City> Cities { get; set; }
-    public DbSet<ListingLocation> Locations { get; set; }
-    public DbSet<ListingContact> Contacts { get; set; }
+    public DbSet<ListingLocation> ListingLocations { get; set; }
+    public DbSet<ListingContact> ListingContacts { get; set; }
     public DbSet<FormAnswer> FormAnswers { get; set; }
     public DbSet<Listing> Listings { get; set; }
     public DbSet<FormQuestion> FormQuestions { get; set; }
@@ -28,6 +26,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>().HasKey(c => c.Id);
+        modelBuilder.Entity<Category>().Property(c => c.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
         modelBuilder.Entity<Category>().Property(c => c.Name)
             .IsRequired();
         modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
@@ -73,6 +74,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<City>().HasMany(c => c.Locations).WithOne(c => c.City);
 
         modelBuilder.Entity<ListingLocation>().HasKey(l => l.ListingId);
+        modelBuilder.Entity<ListingLocation>().Property(l => l.ListingId)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.Listing).WithOne(l => l.Location);
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.County).WithMany(c => c.Locations);
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.City).WithMany(c => c.Locations);
@@ -81,6 +85,9 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<ListingContact>().HasOne(c => c.Listing).WithOne(l => l.Contact);
 
         modelBuilder.Entity<FormAnswer>().HasKey(f => f.Id);
+        modelBuilder.Entity<FormAnswer>().Property(f => f.Id)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
         modelBuilder.Entity<FormAnswer>()
             .HasOne(f => f.Listing)
             .WithMany(l => l.FormAnswers);
@@ -123,7 +130,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Firm>().HasMany(f => f.Subcategories).WithMany(c => c.Firms)
             .UsingEntity<Dictionary<string, object>>("FirmCategory",
-                r => r.HasOne<Subcategory>().WithMany().HasForeignKey("CategoryId"),
+                r => r.HasOne<Subcategory>().WithMany().HasForeignKey("SubcategoryId"),
                 l => l.HasOne<Firm>().WithMany().HasForeignKey("FirmId"));
         modelBuilder.Entity<Firm>().HasMany(f => f.Reviews).WithOne(r => r.Firm);
         modelBuilder.Entity<Firm>().HasMany(f => f.Users).WithOne(u => u.Firm);
@@ -154,12 +161,12 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Review>().Property(r => r.Id)
             .ValueGeneratedOnAdd()
             .IsRequired();
-        modelBuilder.Entity<Review>().Property(r => r.Content).IsRequired();
+        modelBuilder.Entity<Review>().Property(r => r.ReviewText).IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.Rating).IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.Date).IsRequired();
         modelBuilder.Entity<Review>().HasOne(r => r.Firm).WithMany(f => f.Reviews);
 
-        modelBuilder.Entity<UserTypes.UserAccount>().ToTable("AspNetUsers");
+        modelBuilder.Entity<UserTypes.UserAccount>().ToTable("Users");
         modelBuilder.Entity<UserTypes.UserAccount>().HasKey(u => u.Id);
         modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.Id)
             .ValueGeneratedOnAdd()
@@ -183,16 +190,5 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .WithOne()
             .HasForeignKey<UserTypes.AdminAccount>(u => u.UserAccountId)
             .OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public class EntityDbContextFactory : IDesignTimeDbContextFactory<EntityDbContext>
-{
-    public EntityDbContext CreateDbContext(string[] args)
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<EntityDbContext>();
-        optionsBuilder.UseNpgsql(@"Host=localhost;Database=bidro;Username=postgres;Password=admin");
-
-        return new EntityDbContext(optionsBuilder.Options);
     }
 }

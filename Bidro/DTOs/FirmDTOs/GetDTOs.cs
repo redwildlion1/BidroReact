@@ -37,10 +37,10 @@ public class GetDTOs
         GetFirmContactDTO Contact,
         GetFirmLocationDTO Location)
     {
-        public GetFirmDTO FromFirm(Firm firm)
+        public static GetFirmDTO FromFirm(Firm firm)
         {
             return new GetFirmDTO(firm.Id, firm.Name, firm.Description, firm.Logo!, firm.Website,
-                firm.CategoryIds, GetFirmContactDTO.FromFirmContact(firm.Contact!),
+                firm.SubcategoryIds, GetFirmContactDTO.FromFirmContact(firm.Contact!),
                 GetFirmLocationDTO.FromFirmLocation(firm.Location!));
         }
     }

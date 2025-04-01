@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.EntityObjects;
 
-namespace Bidro.Services.Implementations;
+namespace Bidro.EntityObjects;
 
 public record County(string Name, string Code)
 {

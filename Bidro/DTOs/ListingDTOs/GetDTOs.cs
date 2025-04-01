@@ -69,7 +69,7 @@ public class GetDTOs
         public static GetFormAnswerDTO FromFormAnswer(FormAnswer formAnswer)
         {
             return new GetFormAnswerDTO(
-                formAnswer.Value,
+                formAnswer.Answer,
                 formAnswer.Id,
                 formAnswer.FormQuestionId,
                 FormQuestionsDTOs.GetDTOs.GetFormQuestionDTO.FromFormQuestion(formAnswer.Question!)

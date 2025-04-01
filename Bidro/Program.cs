@@ -1,3 +1,4 @@
+using System.Data;
 using Bidro.Config;
 using Bidro.Services;
 using Bidro.Services.Implementations;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -18,6 +20,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 // Register EntityDbContext as a service
 builder.Services.AddDbContext<EntityDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IDbConnection>(_ =>
+    new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<ILocationComponentsService, LocationComponentsService>();

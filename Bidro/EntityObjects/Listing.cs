@@ -11,20 +11,20 @@ public sealed class Listing(
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
-    public Guid SubcategoryId { get; init; } = subcategoryId;
-    public Guid UserId { get; init; } = userId;
+    public Guid SubcategoryId { get; set; } = subcategoryId;
+    public Guid UserId { get; set; } = userId;
 
-    [Required] [StringLength(50)] public string Title { get; init; } = title;
+    [Required] [StringLength(50)] public string Title { get; set; } = title;
 
-    public ListingLocation? Location { get; init; }
+    public ListingLocation? Location { get; set; }
 
-    public ListingContact? Contact { get; init; }
+    public ListingContact? Contact { get; set; }
 
-    public List<FormAnswer>? FormAnswers { get; init; }
+    public List<FormAnswer>? FormAnswers { get; set; }
 
-    public UserTypes.UserAccount? User { get; init; }
+    public UserTypes.UserAccount? User { get; set; }
 
-    public Subcategory? Subcategory { get; init; }
+    public Subcategory? Subcategory { get; set; }
 }

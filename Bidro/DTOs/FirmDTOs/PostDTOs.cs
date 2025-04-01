@@ -9,16 +9,6 @@ public class PostDTOs
         PostFirmContactDTO Contact,
         PostFirmLocationDTO Location)
     {
-        public Firm ToFirm()
-        {
-            var baseFirm = new Firm(Base.Name, Base.Description, Base.Logo, Base.Website, Base.CategoryIds)
-            {
-                Contact = Contact.ToFirmContact(),
-                Location = Location.ToFirmLocation()
-            };
-
-            return baseFirm;
-        }
     }
 
     public record PostFirmBaseDTO(
@@ -26,7 +16,7 @@ public class PostDTOs
         string Description,
         string Logo,
         string Website,
-        List<Guid> CategoryIds);
+        List<Guid> SubcategoryIds);
 
     public record PostFirmLocationDTO(
         string Address,

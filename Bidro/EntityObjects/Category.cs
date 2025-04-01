@@ -25,12 +25,14 @@ public record Category
     public Guid Id { get; set; }
 
     [Key]
-    [StringLength(Constants.CategoryIdLength)]
+    [StringLength(ValidationConstants.CategoryIdentifierLength)]
     public string Identifier { get; set; }
 
     [Required] [StringLength(50)] public string Name { get; set; }
 
     [Required] [StringLength(50)] public string Icon { get; set; }
+
+    public string? Description { get; set; }
 
     public List<Subcategory>? Subcategories { get; set; }
 

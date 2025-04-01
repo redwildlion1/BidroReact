@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Services.Implementations;
 using Bidro.Types;
 
 namespace Bidro.EntityObjects;
@@ -9,8 +8,7 @@ public class Firm(
     string name,
     string description,
     string logo,
-    string? website,
-    List<Guid>? categoryIds)
+    string? website)
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -31,7 +29,8 @@ public class Firm(
 
     [Required] public Guid ContactId { get; set; }
 
-    public List<Guid>? CategoryIds { get; set; } = categoryIds;
+    [NotMapped] public List<Guid>? SubcategoryIds { get; set; }
+
     public FirmContact? Contact { get; set; }
     public FirmLocation? Location { get; set; }
     public List<Subcategory>? Subcategories { get; set; }

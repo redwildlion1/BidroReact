@@ -26,7 +26,7 @@ public record Subcategory
     public Guid Id { get; set; }
 
     [Key]
-    [StringLength(Constants.SubcategoryIdLength)]
+    [StringLength(ValidationConstants.SubcategoryIdentifierLength)]
     public string Identifier { get; set; }
 
     [Required] [StringLength(50)] public string Name { get; set; }
@@ -34,7 +34,7 @@ public record Subcategory
     [Required] [StringLength(50)] public string Icon { get; set; }
 
     [Required]
-    [StringLength(Constants.CategoryIdLength)]
+    [StringLength(ValidationConstants.CategoryIdentifierLength)]
     [ForeignKey(nameof(Category))]
     public Guid ParentCategoryId { get; set; }
 

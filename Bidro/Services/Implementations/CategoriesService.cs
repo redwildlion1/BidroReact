@@ -1,58 +1,77 @@
-using Bidro.Config;
+using System.Data;
 using Bidro.DTOs.CategoryDTOs;
 using Bidro.EntityObjects;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Dapper;
 
 namespace Bidro.Services.Implementations;
 
-public class CategoriesService(EntityDbContext db) : ICategoriesService
+public class CategoriesService(IDbConnection db) : ICategoriesService
 {
-    public async Task<IActionResult> AddCategory(Category category)
+    public async Task<GetDTOs.GetCategoryDTO> AddCategory(PostDTOs.PostCategoryDTO postCategory)
     {
-        await db.Categories.AddAsync(category);
-        await db.SaveChangesAsync();
-        return new OkResult();
+        const string sql =
+            "INSERT INTO \"Categories\" (\"Name\", \"Icon\", \"Identifier\") VALUES (@Name, @Icon, @Identifier) RETURNING \"Id\"";
+        var id = await db.ExecuteScalarAsync<Guid>(sql, postCategory);
+        return new GetDTOs.GetCategoryDTO(
+            id,
+            postCategory.Name,
+            postCategory.Icon,
+            postCategory.Identifier
+        );
     }
 
-    public async Task<IActionResult> AddSubcategory(Subcategory subcategory)
+    public async Task<GetDTOs.GetSubcategoryDTO> AddSubcategory(PostDTOs.PostSubcategoryDTO postSubcategory)
     {
-        await db.Subcategories.AddAsync(subcategory);
-        await db.SaveChangesAsync();
-        return new OkResult();
+        const string sql =
+            "INSERT INTO \"Subcategories\" (\"Name\", \"Icon\", \"ParentCategoryId\", \"Identifier\") VALUES (@Name, @Icon, @ParentCategoryId, @Identifier) RETURNING \"Id\"";
+        var id = await db.ExecuteScalarAsync<Guid>(sql, postSubcategory);
+        return new GetDTOs.GetSubcategoryDTO(
+            id,
+            postSubcategory.Name,
+            postSubcategory.Icon,
+            postSubcategory.CategoryId,
+            postSubcategory.Identifier
+        );
     }
 
-    public async Task<IActionResult> GetAllCategories()
+    public async Task<IEnumerable<GetDTOs.GetCategoryDTO>> GetAllCategories()
     {
-        var categories = await db.Categories
-            .Include(c => c.Subcategories)
-            .ToListAsync();
-        if (categories.Count == 0) return new NotFoundResult();
-        return new OkObjectResult(categories);
+        const string sql = "SELECT * FROM \"Categories\"";
+        var categories = await db.QueryAsync<Category>(sql);
+        return categories.Select(c => new GetDTOs.GetCategoryDTO(
+            c.Id,
+            c.Name,
+            c.Icon,
+            c.Identifier
+        )).ToList();
     }
 
-    public async Task<IActionResult> UpdateCategory(UpdateDTOs.UpdateCategoryDTO category)
+    public async Task<GetDTOs.GetCategoryDTO> UpdateCategory(UpdateDTOs.UpdateCategoryDTO category)
     {
-        var categoryToUpdate = await db.Categories.FindAsync(category.Id);
-        if (categoryToUpdate == null) return new NotFoundResult();
-        categoryToUpdate.Name = category.Name;
-        categoryToUpdate.Icon = category.Icon;
-        categoryToUpdate.Identifier = category.Identifier;
-        db.Categories.Update(categoryToUpdate);
-        await db.SaveChangesAsync();
-        return new OkResult();
+        const string sql =
+            "UPDATE \"Categories\" SET \"Name\" = @Name, \"Icon\" = @Icon, \"Identifier\" = @Identifier WHERE \"Id\" = @Id";
+        return await db.ExecuteAsync(sql, category) > 0
+            ? new GetDTOs.GetCategoryDTO(
+                category.Id,
+                category.Name,
+                category.Icon,
+                category.Identifier
+            )
+            : throw new KeyNotFoundException($"Category with ID {category.Id} not found.");
     }
 
-    public async Task<IActionResult> UpdateSubcategory(UpdateDTOs.UpdateSubcategoryDTO subcategory)
+    public async Task<GetDTOs.GetSubcategoryDTO> UpdateSubcategory(UpdateDTOs.UpdateSubcategoryDTO subcategory)
     {
-        var subcategoryToUpdate = await db.Subcategories.FindAsync(subcategory.Id);
-        if (subcategoryToUpdate == null) return new NotFoundResult();
-        subcategoryToUpdate.Name = subcategory.Name;
-        subcategoryToUpdate.Icon = subcategory.Icon;
-        subcategoryToUpdate.ParentCategoryId = subcategory.ParentCategoryId;
-        subcategoryToUpdate.Identifier = subcategory.Identifier;
-        db.Subcategories.Update(subcategoryToUpdate);
-        await db.SaveChangesAsync();
-        return new OkResult();
+        const string sql =
+            "UPDATE \"Subcategories\" SET \"Name\" = @Name, \"Icon\" = @Icon, \"ParentCategoryId\" = @ParentCategoryId, \"Identifier\" = @Identifier WHERE \"Id\" = @Id";
+        return await db.ExecuteAsync(sql, subcategory) > 0
+            ? new GetDTOs.GetSubcategoryDTO(
+                subcategory.Id,
+                subcategory.Name,
+                subcategory.Icon,
+                subcategory.ParentCategoryId,
+                subcategory.Identifier
+            )
+            : throw new KeyNotFoundException($"Subcategory with ID {subcategory.Id} not found.");
     }
 }

@@ -1,15 +1,13 @@
 using Bidro.DTOs.CategoryDTOs;
-using Bidro.EntityObjects;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Bidro.Services;
 
 public interface ICategoriesService
 {
-    public Task<IActionResult> AddCategory(Category category);
-    public Task<IActionResult> AddSubcategory(Subcategory subcategory);
+    public Task<GetDTOs.GetCategoryDTO> AddCategory(PostDTOs.PostCategoryDTO postCategory);
+    public Task<GetDTOs.GetSubcategoryDTO> AddSubcategory(PostDTOs.PostSubcategoryDTO postSubcategory);
 
-    public Task<IActionResult> GetAllCategories();
-    public Task<IActionResult> UpdateCategory(UpdateDTOs.UpdateCategoryDTO category);
-    public Task<IActionResult> UpdateSubcategory(UpdateDTOs.UpdateSubcategoryDTO subcategory);
+    public Task<IEnumerable<GetDTOs.GetCategoryDTO>> GetAllCategories();
+    public Task<GetDTOs.GetCategoryDTO> UpdateCategory(UpdateDTOs.UpdateCategoryDTO category);
+    public Task<GetDTOs.GetSubcategoryDTO> UpdateSubcategory(UpdateDTOs.UpdateSubcategoryDTO subcategory);
 }

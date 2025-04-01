@@ -1,12 +1,11 @@
-using Bidro.Services.Implementations;
-using Microsoft.AspNetCore.Mvc;
+using Bidro.DTOs.LocationComponentsDTOs;
 
 namespace Bidro.Services;
 
 public interface ILocationComponentsService
 {
-    public Task<IActionResult> AddCounty(County county);
-    public Task<IActionResult> AddCity(City city);
-    public Task<IActionResult> GetAllCounties();
-    public Task<IActionResult> GetAllCities();
+    public Task<GetDTOs.GetCountyDTO> AddCounty(PostDTOs.PostCountyDTO postCounty);
+    public Task<GetDTOs.GetCityDTO> AddCity(PostDTOs.PostCityDTO postCity);
+    public Task<IEnumerable<GetDTOs.GetCountyDTO>> GetAllCounties();
+    public Task<IEnumerable<GetDTOs.GetCityDTO>> GetAllCities();
 }

@@ -1,32 +1,22 @@
-using Bidro.EntityObjects;
-
 namespace Bidro.DTOs.CategoryDTOs;
 
 public class GetDTOs
 {
     public record GetCategoryDTO(
+        Guid Id,
         string Name,
         string Icon,
-        string Identifier,
-        List<GetSubcategoryDTO> Subcategories)
+        string Identifier)
     {
-        public GetCategoryDTO FromCategory(Category category)
-        {
-            return new GetCategoryDTO(category.Name, category.Icon, category.Identifier,
-                (category.Subcategories ?? []).Select(GetSubcategoryDTO.FromSubcategory).ToList());
-        }
+        public List<GetSubcategoryDTO> Subcategories { get; set; } = [];
     }
 
     public record GetSubcategoryDTO(
+        Guid Id,
         string Name,
         string Icon,
         Guid CategoryId,
         string Identifier)
     {
-        public static GetSubcategoryDTO FromSubcategory(Subcategory subcategory)
-        {
-            return new GetSubcategoryDTO(subcategory.Name, subcategory.Icon, subcategory.ParentCategoryId,
-                subcategory.Identifier);
-        }
     }
 }

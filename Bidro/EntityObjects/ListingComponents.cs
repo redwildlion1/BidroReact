@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Services.Implementations;
 
 namespace Bidro.EntityObjects;
 
@@ -11,27 +10,28 @@ public sealed record ListingLocation(
     string PostalCode)
 {
     [Required] public Guid ListingId { get; set; }
-    [Required] public County? County { get; init; }
+    [Required] public County? County { get; set; }
 
-    [Required] public City? City { get; init; }
+    [Required] public City? City { get; set; }
 
-    [Required] public Listing? Listing { get; init; }
+    [Required] public Listing? Listing { get; set; }
 }
 
 public sealed record ListingContact(string Name, string Email, string Phone)
 {
     [Required] public Guid ListingId { get; set; }
-    public Listing? Listing { get; init; }
+    public Listing? Listing { get; set; }
 }
 
 public sealed record FormAnswer(
-    string Value,
-    [property: DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    Guid Id,
+    string Answer,
     Guid FormQuestionId,
     Guid ListingId)
 {
-    [Required] public FormQuestion? Question { get; init; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; }
 
-    [Required] public Listing? Listing { get; init; }
+    [Required] public FormQuestion? Question { get; set; }
+
+    [Required] public Listing? Listing { get; set; }
 }

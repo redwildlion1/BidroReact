@@ -1,4 +1,4 @@
-using Bidro.EntityObjects;
+using Bidro.DTOs.FormQuestionsDTOs;
 using Bidro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -11,15 +11,17 @@ public class FormQuestionsController(IFormQuestionsService formsService) : Contr
 {
     [HttpPost("addFormQuestion")]
     [SwaggerOperation(Summary = "Add a new form question")]
-    public async Task<IActionResult> AddFormQuestion(FormQuestion formQuestion)
+    public async Task<IActionResult> AddFormQuestion(PostDTOs.PostFormQuestionDTO formQuestion)
     {
-        return await formsService.AddFormQuestion(formQuestion);
+        var result = await formsService.AddFormQuestion(formQuestion);
+        return CreatedAtAction(nameof(AddFormQuestion), new { formQuestionId = result }, result);
     }
 
     [HttpGet("getFormQuestionsBySubcategory")]
     [SwaggerOperation(Summary = "Get form questions by subcategory")]
     public async Task<IActionResult> GetFormQuestionsBySubcategory(Guid subcategoryId)
     {
-        return await formsService.GetFormQuestionsBySubcategory(subcategoryId);
+        var result = await formsService.GetFormQuestionsBySubcategory(subcategoryId);
+        return Ok(result);
     }
 }

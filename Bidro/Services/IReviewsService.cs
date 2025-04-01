@@ -1,12 +1,11 @@
-using Bidro.EntityObjects;
-using Microsoft.AspNetCore.Mvc;
+using Bidro.DTOs.ReviewDTOs;
 
 namespace Bidro.Services;
 
 public interface IReviewsService
 {
-    Task<IActionResult> GetReviewById(Guid reviewId);
-    Task<IActionResult> GetReviewsByFirmId(Guid firmId);
-    Task<IActionResult> CreateReview(Review review);
-    Task<IActionResult> DeleteReview(Guid reviewId);
+    Task<GetReviewDTO> GetReviewById(Guid reviewId);
+    Task<IEnumerable<GetReviewDTO>> GetReviewsByFirmId(Guid firmId);
+    Task<bool> CreateReview(PostReviewDTO review);
+    Task<bool> DeleteReview(Guid reviewId);
 }

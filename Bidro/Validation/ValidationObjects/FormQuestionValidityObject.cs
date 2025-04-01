@@ -8,19 +8,17 @@ public class FormQuestionValidityObject
     {
         Label = formQuestionDTO.Label;
         DefaultAnswer = formQuestionDTO.DefaultAnswer;
+        SubcategoryId = formQuestionDTO.SubcategoryId;
     }
 
     public FormQuestionValidityObject(UpdateDTOs.UpdateFormQuestionDTO formQuestionDTO)
     {
         Label = formQuestionDTO.Label;
         DefaultAnswer = formQuestionDTO.DefaultAnswer;
+        SubcategoryId = formQuestionDTO.SubcategoryId;
     }
 
     public string Label { get; }
     public string DefaultAnswer { get; }
-}
-
-public class FormQuestionValidityObjectDb(PostDTOs.PostFormQuestionDTO formQuestionDTO)
-{
-    public Guid SubcategoryId { get; } = formQuestionDTO.SubcategoryId;
+    public Guid SubcategoryId { get; }
 }

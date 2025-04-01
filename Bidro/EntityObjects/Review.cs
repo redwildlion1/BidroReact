@@ -4,17 +4,17 @@ using Bidro.Types;
 
 namespace Bidro.EntityObjects;
 
-public class Review(Guid id, string content, int rating, DateTime date, Guid firmId, Guid userId)
+public class Review(string reviewText, int rating, DateTime date, Guid firmId, Guid userId)
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; init; } = id;
+    public Guid Id { get; init; }
 
     [Required] public Guid UserId { get; set; } = userId;
 
     public UserTypes.UserAccount? User { get; init; }
 
-    [StringLength(100)] public string Content { get; init; } = content;
+    [StringLength(100)] public string ReviewText { get; init; } = reviewText;
 
     public int Rating { get; init; } = rating;
 

@@ -13,13 +13,15 @@ public class ListingsController(IListingsService listingsService) : ControllerBa
     [SwaggerOperation(Summary = "Add a new listing")]
     public async Task<IActionResult> AddListing(PostDTOs.PostListingDTO listing)
     {
-        return await listingsService.AddListing(listing);
+        var result = await listingsService.AddListing(listing);
+        return CreatedAtAction(nameof(AddListing), new { listingId = result }, result);
     }
 
     [HttpGet("getListingById")]
     [SwaggerOperation(Summary = "Get a listing by its ID")]
     public async Task<IActionResult> GetListingById(Guid listingId)
     {
-        return await listingsService.GetListingById(listingId);
+        var result = await listingsService.GetListingById(listingId);
+        return Ok(result);
     }
 }

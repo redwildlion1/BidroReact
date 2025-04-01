@@ -1,24 +1,23 @@
 using Bidro.DTOs.FirmDTOs;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Bidro.Services;
 
 public interface IFirmsService
 {
-    public Task<IActionResult> GetFirmById(Guid firmId);
-    public Task<IActionResult> GetFirmsInCategory(Guid categoryId);
+    public Task<GetDTOs.GetFirmDTO> GetFirmById(Guid firmId);
+    public Task<IEnumerable<GetDTOs.GetFirmDTO>> GetFirmsInCategory(Guid categoryId);
 
-    public Task<IActionResult> GetFirmsInSubcategory(Guid subcategoryId);
+    public Task<IEnumerable<GetDTOs.GetFirmDTO>> GetFirmsInSubcategory(Guid subcategoryId);
 
     /*public Task<IActionResult> GetFirmsBySortCriteria(string sortCriteria);*/
-    public Task<IActionResult> PostFirm(PostDTOs.PostFirmDTO postFirmDTO);
-    public Task<IActionResult> UpdateFirmName(UpdateDTOs.UpdateFirmNameDTO updateFirmNameDTO);
-    public Task<IActionResult> UpdateFirmDescription(UpdateDTOs.UpdateFirmDescriptionDTO updateFirmDescriptionDTO);
-    public Task<IActionResult> UpdateFirmLogo(UpdateDTOs.UpdateFirmLogoDTO updateFirmLogoDTO);
-    public Task<IActionResult> UpdateFirmWebsite(UpdateDTOs.UpdateFirmWebsiteDTO updateFirmWebsiteDTO);
-    public Task<IActionResult> UpdateFirmLocation(UpdateDTOs.UpdateFirmLocationDTO updateFirmLocationDTO);
-    public Task<IActionResult> UpdateFirmContact(UpdateDTOs.UpdateFirmContactDTO updateFirmContactDTO);
-    public Task<IActionResult> SuspendFirm(Guid firmId);
-    public Task<IActionResult> UnsuspendFirm(Guid firmId);
-    public Task<IActionResult> VerifyFirm(Guid firmId);
+    public Task<Guid> PostFirm(PostDTOs.PostFirmDTO postFirmDTO);
+    public Task<bool> UpdateFirmName(UpdateDTOs.UpdateFirmNameDTO updateFirmNameDTO);
+    public Task<bool> UpdateFirmDescription(UpdateDTOs.UpdateFirmDescriptionDTO updateFirmDescriptionDTO);
+    public Task<bool> UpdateFirmLogo(UpdateDTOs.UpdateFirmLogoDTO updateFirmLogoDTO);
+    public Task<bool> UpdateFirmWebsite(UpdateDTOs.UpdateFirmWebsiteDTO updateFirmWebsiteDTO);
+    public Task<bool> UpdateFirmLocation(UpdateDTOs.UpdateFirmLocationDTO updateFirmLocationDTO);
+    public Task<bool> UpdateFirmContact(UpdateDTOs.UpdateFirmContactDTO updateFirmContactDTO);
+    public Task<bool> SuspendFirm(Guid firmId);
+    public Task<bool> UnsuspendFirm(Guid firmId);
+    public Task<bool> VerifyFirm(Guid firmId);
 }

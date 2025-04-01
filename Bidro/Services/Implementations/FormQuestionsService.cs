@@ -1,42 +1,55 @@
-using Bidro.Config;
+using System.Data;
 using Bidro.DTOs.FormQuestionsDTOs;
-using Bidro.EntityObjects;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Dapper;
 
 namespace Bidro.Services.Implementations;
 
-public class FormQuestionsService(EntityDbContext db) : IFormQuestionsService
+public class FormQuestionsService(IDbConnection db) : IFormQuestionsService
 {
-    public async Task<IActionResult> AddFormQuestion(FormQuestion formQuestion)
+    public async Task<GetDTOs.GetFormQuestionDTO> AddFormQuestion(PostDTOs.PostFormQuestionDTO formQuestion)
     {
-        await db.FormQuestions.AddAsync(formQuestion);
-        await db.SaveChangesAsync();
-        return new OkResult();
+        var sql =
+            "INSERT INTO \"FormQuestions\" (\"Label\", \"InputType\", \"OrderInForm\", \"IsRequired\", \"SubcategoryId\", \"DefaultAnswer\") VALUES (@Label, @InputType, @OrderInForm, @IsRequired, @SubcategoryId, @DefaultAnswer) RETURNING \"Id\"";
+        var id = await db.ExecuteScalarAsync<Guid>(sql, formQuestion);
+        return new GetDTOs.GetFormQuestionDTO(
+            id,
+            formQuestion.Label,
+            formQuestion.InputType,
+            formQuestion.OrderInForm,
+            formQuestion.IsRequired,
+            formQuestion.SubcategoryId,
+            formQuestion.DefaultAnswer
+        );
     }
 
-    public async Task<IActionResult> UpdateFormQuestion(UpdateDTOs.UpdateFormQuestionDTO updateFormQuestionDTO)
+    public async Task<bool> UpdateFormQuestions(UpdateDTOs.UpdateFormQuestionsDTO formQuestions)
     {
-        var formQuestion =
-            await db.FormQuestions.FirstOrDefaultAsync(f => f.Id == updateFormQuestionDTO.Id);
-        if (formQuestion == null) return new NotFoundResult();
-        formQuestion.Label = updateFormQuestionDTO.Label;
-        formQuestion.InputType = updateFormQuestionDTO.InputType;
-        formQuestion.OrderInForm = updateFormQuestionDTO.OrderInForm;
-        formQuestion.IsRequired = updateFormQuestionDTO.IsRequired;
-        formQuestion.SubcategoryId = updateFormQuestionDTO.SubcategoryId;
-        formQuestion.DefaultAnswer = updateFormQuestionDTO.DefaultAnswer;
-        await db.SaveChangesAsync();
-        return new OkResult();
+        using var transaction = db.BeginTransaction();
+        try
+        {
+            foreach (var formQuestion in formQuestions.FormQuestions)
+            {
+                const string sql =
+                    "UPDATE \"FormQuestions\" SET \"Label\" = @Label, \"InputType\" = @InputType, \"OrderInForm\" = @OrderInForm, \"IsRequired\" = @IsRequired, \"DefaultAnswer\" = @DefaultAnswer WHERE \"Id\" = @Id";
+                await db.ExecuteAsync(sql, formQuestion, transaction);
+            }
+
+            transaction.Commit();
+            return true;
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            return false;
+        }
     }
 
 
-    public async Task<IActionResult> GetFormQuestionsBySubcategory(Guid subcategoryId)
+    public async Task<IEnumerable<GetDTOs.GetFormQuestionDTO>> GetFormQuestionsBySubcategory(Guid subcategoryId)
     {
-        var formQuestions = await db.FormQuestions
-            .Where(f => f.SubcategoryId == subcategoryId)
-            .ToListAsync();
-        if (formQuestions.Count == 0) return new NotFoundResult();
-        return new OkObjectResult(formQuestions);
+        const string sql =
+            "SELECT * FROM \"FormQuestions\" WHERE \"SubcategoryId\" = @SubcategoryId ORDER BY \"OrderInForm\"";
+        var formQuestions = await db.QueryAsync<GetDTOs.GetFormQuestionDTO>(sql, new { SubcategoryId = subcategoryId });
+        return formQuestions.ToList();
     }
 }

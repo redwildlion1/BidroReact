@@ -11,31 +11,33 @@ public class LocationComponentsController(ILocationComponentsService locationCom
 {
     [HttpPost("addCounty")]
     [SwaggerOperation(Summary = "Add a new county")]
-    public async Task<IActionResult> AddCounty(CountyDTO countyDTO)
+    public async Task<IActionResult> AddCounty(PostDTOs.PostCountyDTO countyDTO)
     {
-        var county = countyDTO.ToCounty();
-        return await locationComponentsService.AddCounty(county);
+        var result = await locationComponentsService.AddCounty(countyDTO);
+        return CreatedAtAction(nameof(AddCounty), new { countyId = result }, result);
     }
 
     [HttpPost("addCity")]
     [SwaggerOperation(Summary = "Add a new city")]
-    public async Task<IActionResult> AddCity(CityDTO cityDTO)
+    public async Task<IActionResult> AddCity(PostDTOs.PostCityDTO city)
     {
-        var city = cityDTO.ToCity();
-        return await locationComponentsService.AddCity(city);
+        var result = await locationComponentsService.AddCity(city);
+        return CreatedAtAction(nameof(AddCity), new { cityId = result }, result);
     }
 
     [HttpGet("getAllCounties")]
     [SwaggerOperation(Summary = "Get all counties")]
     public async Task<IActionResult> GetAllCounties()
     {
-        return await locationComponentsService.GetAllCounties();
+        var result = await locationComponentsService.GetAllCounties();
+        return Ok(result);
     }
 
     [HttpGet("getAllCities")]
     [SwaggerOperation(Summary = "Get all cities")]
     public async Task<IActionResult> GetAllCities()
     {
-        return await locationComponentsService.GetAllCities();
+        var result = await locationComponentsService.GetAllCities();
+        return Ok(result);
     }
 }

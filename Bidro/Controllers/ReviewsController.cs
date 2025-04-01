@@ -1,4 +1,4 @@
-using Bidro.EntityObjects;
+using Bidro.DTOs.ReviewDTOs;
 using Bidro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,27 +13,31 @@ public class ReviewsController(IReviewsService reviewsService) : ControllerBase
     [SwaggerOperation(Summary = "Get a review by its ID")]
     public async Task<IActionResult> GetReviewById(Guid reviewId)
     {
-        return await reviewsService.GetReviewById(reviewId);
+        var result = await reviewsService.GetReviewById(reviewId);
+        return Ok(result);
     }
 
     [HttpGet("reviewsByFirmId/{firmId}")]
     [SwaggerOperation(Summary = "Get reviews by firm ID")]
     public async Task<IActionResult> GetReviewsByFirmId(Guid firmId)
     {
-        return await reviewsService.GetReviewsByFirmId(firmId);
+        var result = await reviewsService.GetReviewsByFirmId(firmId);
+        return Ok(result);
     }
 
     [HttpPost("createReview")]
     [SwaggerOperation(Summary = "Create a new review")]
-    public async Task<IActionResult> CreateReview(Review review)
+    public async Task<IActionResult> CreateReview(PostReviewDTO review)
     {
-        return await reviewsService.CreateReview(review);
+        var result = await reviewsService.CreateReview(review);
+        return CreatedAtAction(nameof(GetReviewById), new { reviewId = result }, result);
     }
 
     [HttpDelete("review/{reviewId}")]
     [SwaggerOperation(Summary = "Delete a review")]
     public async Task<IActionResult> DeleteReview(Guid reviewId)
     {
-        return await reviewsService.DeleteReview(reviewId);
+        var result = await reviewsService.DeleteReview(reviewId);
+        return Ok(result);
     }
 }
