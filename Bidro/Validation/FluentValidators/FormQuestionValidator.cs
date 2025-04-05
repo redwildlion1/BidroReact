@@ -1,11 +1,13 @@
+using Bidro.Config;
 using Bidro.Validation.ValidationObjects;
+using Dapper;
 using FluentValidation;
 
 namespace Bidro.Validation.FluentValidators;
 
 public class FormQuestionValidator : AbstractValidator<FormQuestionValidityObject>
 {
-    public FormQuestionValidator()
+    public FormQuestionValidator(PgConnectionPool pgConnectionPool)
     {
         RuleFor(x => x.Label)
             .NotEmpty()
@@ -22,5 +24,15 @@ public class FormQuestionValidator : AbstractValidator<FormQuestionValidityObjec
         RuleFor(x => x.SubcategoryId)
             .NotEmpty()
             .WithMessage("SubcategoryId cannot be empty");
+
+        RuleFor(x => x.SubcategoryId)
+            .MustAsync(async (subcategoryId, cancellation) =>
+            {
+                using var connection = await pgConnectionPool.RentAsync();
+                const string query = "SELECT COUNT(*) FROM \"Subcategories\" WHERE \"Id\" = @SubcategoryId";
+                var count = await connection.ExecuteScalarAsync<int>(query, new { SubcategoryId = subcategoryId });
+                return count > 0;
+            })
+            .WithMessage("SubcategoryId does not exist in the database");
     }
 }

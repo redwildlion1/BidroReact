@@ -2,28 +2,25 @@ using Bidro.EntityObjects;
 
 namespace Bidro.DTOs.CategoryDTOs;
 
-public class PostDTOs
+public record PostCategoryDTO(
+    string Name,
+    string Icon,
+    string Identifier)
 {
-    public record PostCategoryDTO(
-        string Name,
-        string Icon,
-        string Identifier)
+    public Category ToCategory()
     {
-        public Category ToCategory()
-        {
-            return new Category(Name, Icon, Identifier);
-        }
+        return new Category(Name, Icon, Identifier);
     }
+}
 
-    public record PostSubcategoryDTO(
-        string Name,
-        string Icon,
-        Guid CategoryId,
-        string Identifier)
+public record PostSubcategoryDTO(
+    string Name,
+    string Icon,
+    Guid ParentCategoryId,
+    string Identifier)
+{
+    public Subcategory ToSubcategory()
     {
-        public Subcategory ToSubcategory()
-        {
-            return new Subcategory(CategoryId, Name, Icon, Identifier);
-        }
+        return new Subcategory(ParentCategoryId, Name, Icon, Identifier);
     }
 }

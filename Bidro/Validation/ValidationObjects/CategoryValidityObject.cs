@@ -1,18 +1,17 @@
-using PostDTOs = Bidro.DTOs.CategoryDTOs.PostDTOs;
-using UpdateDTOs = Bidro.DTOs.CategoryDTOs.UpdateDTOs;
+using Bidro.DTOs.CategoryDTOs;
 
 namespace Bidro.Validation.ValidationObjects;
 
 public class CategoryValidityObjectDb
 {
-    public CategoryValidityObjectDb(PostDTOs.PostCategoryDTO categoryDTO)
+    public CategoryValidityObjectDb(PostCategoryDTO categoryDTO)
     {
         Name = categoryDTO.Name;
         Icon = categoryDTO.Icon;
         Identifier = categoryDTO.Identifier;
     }
 
-    public CategoryValidityObjectDb(UpdateDTOs.UpdateCategoryDTO categoryDTO)
+    public CategoryValidityObjectDb(UpdateCategoryDTO categoryDTO)
     {
         Name = categoryDTO.Name;
         Icon = categoryDTO.Icon;
@@ -26,14 +25,14 @@ public class CategoryValidityObjectDb
 
 public class CategoryValidityObject
 {
-    public CategoryValidityObject(PostDTOs.PostCategoryDTO categoryDTO)
+    public CategoryValidityObject(PostCategoryDTO categoryDTO)
     {
         Name = categoryDTO.Name;
         Icon = categoryDTO.Icon;
         Identifier = categoryDTO.Identifier;
     }
 
-    public CategoryValidityObject(UpdateDTOs.UpdateCategoryDTO categoryDTO)
+    public CategoryValidityObject(UpdateCategoryDTO categoryDTO)
     {
         Name = categoryDTO.Name;
         Icon = categoryDTO.Icon;

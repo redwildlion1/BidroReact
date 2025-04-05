@@ -1,5 +1,8 @@
+using Bidro.Config;
 using Bidro.DTOs.ListingDTOs;
 using Bidro.Services;
+using Bidro.Validation.FluentValidators;
+using Bidro.Validation.ValidationObjects;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -7,21 +10,26 @@ namespace Bidro.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ListingsController(IListingsService listingsService) : ControllerBase
+public class ListingsController(IListingsService listingsService, PgConnectionPool pgConnectionPool) : ControllerBase
 {
     [HttpPost("addListing")]
     [SwaggerOperation(Summary = "Add a new listing")]
-    public async Task<IActionResult> AddListing(PostDTOs.PostListingDTO listing)
+    public async Task<IResult> AddListing(PostListingDTO listing)
     {
+        var validator = new ListingValidator(pgConnectionPool);
+        var validityObject = new ListingValidityObject(listing);
+        var validationResult = await validator.ValidateAsync(validityObject);
+        if (!validationResult.IsValid) return Results.BadRequest(validationResult.Errors);
+
         var result = await listingsService.AddListing(listing);
-        return CreatedAtAction(nameof(AddListing), new { listingId = result }, result);
+        return Results.Created($"/api/listings/{result}", result);
     }
 
     [HttpGet("getListingById")]
     [SwaggerOperation(Summary = "Get a listing by its ID")]
-    public async Task<IActionResult> GetListingById(Guid listingId)
+    public async Task<IResult> GetListingById(Guid listingId)
     {
         var result = await listingsService.GetListingById(listingId);
-        return Ok(result);
+        return Results.Ok(result);
     }
 }

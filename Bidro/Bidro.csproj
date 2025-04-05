@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
-        <PublishAot>false</PublishAot>
+        <PublishAot>true</PublishAot>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <LangVersion>latestmajor</LangVersion>
     </PropertyGroup>
@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="Castle.Core" Version="5.2.1"/>
         <PackageReference Include="Dapper" Version="2.1.66"/>
         <PackageReference Include="Dapper.AOT" Version="1.0.48"/>

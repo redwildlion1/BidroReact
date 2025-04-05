@@ -4,14 +4,14 @@ namespace Bidro.Validation.ValidationObjects;
 
 public class SubcategoryValidityObject
 {
-    public SubcategoryValidityObject(PostDTOs.PostSubcategoryDTO subcategoryDTO)
+    public SubcategoryValidityObject(PostSubcategoryDTO subcategoryDTO)
     {
         Name = subcategoryDTO.Name;
         Identifier = subcategoryDTO.Identifier;
         Icon = subcategoryDTO.Icon;
     }
 
-    public SubcategoryValidityObject(UpdateDTOs.UpdateSubcategoryDTO subcategoryDTO)
+    public SubcategoryValidityObject(UpdateSubcategoryDTO subcategoryDTO)
     {
         Name = subcategoryDTO.Name;
         Identifier = subcategoryDTO.Identifier;

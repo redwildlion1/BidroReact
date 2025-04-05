@@ -4,8 +4,8 @@ namespace Bidro.Services;
 
 public interface ILocationComponentsService
 {
-    public Task<GetDTOs.GetCountyDTO> AddCounty(PostDTOs.PostCountyDTO postCounty);
-    public Task<GetDTOs.GetCityDTO> AddCity(PostDTOs.PostCityDTO postCity);
-    public Task<IEnumerable<GetDTOs.GetCountyDTO>> GetAllCounties();
-    public Task<IEnumerable<GetDTOs.GetCityDTO>> GetAllCities();
+    public Task<GetCountyDTO> AddCounty(PostCountyDTO postCounty);
+    public Task<GetCityDTO> AddCity(PostCityDTO postCity);
+    public Task<IEnumerable<GetCountyDTO>> GetAllCounties();
+    public Task<IEnumerable<GetCityDTO>> GetAllCities();
 }

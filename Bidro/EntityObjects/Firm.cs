@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Types;
 
 namespace Bidro.EntityObjects;
 
@@ -22,8 +21,9 @@ public class Firm(
 
     [StringLength(100)] public string? Website { get; set; } = website;
 
-    public bool IsVerified { get; set; } = false;
-    public bool IsSuspended { get; set; } = false;
+    public int ReviewCount { get; set; }
+    public bool IsVerified { get; set; }
+    public bool IsSuspended { get; set; }
 
     [Required] public Guid LocationId { get; set; }
 
@@ -36,7 +36,7 @@ public class Firm(
     public List<Subcategory>? Subcategories { get; set; }
     public int Rating { get; set; } = 0;
     public List<Review>? Reviews { get; set; }
-    public List<UserTypes.FirmAccount>? Users { get; set; }
+    public List<User>? Users { get; set; }
 }
 
 public class FirmLocation(

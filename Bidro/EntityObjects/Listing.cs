@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Types;
 
 namespace Bidro.EntityObjects;
 
@@ -24,7 +23,7 @@ public sealed class Listing(
 
     public List<FormAnswer>? FormAnswers { get; set; }
 
-    public UserTypes.UserAccount? User { get; set; }
+    public User? User { get; set; }
 
     public Subcategory? Subcategory { get; set; }
 }

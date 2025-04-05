@@ -4,7 +4,7 @@ namespace Bidro.Services;
 
 public interface IFormQuestionsService
 {
-    public Task<GetDTOs.GetFormQuestionDTO> AddFormQuestion(PostDTOs.PostFormQuestionDTO postFormQuestionDTO);
-    public Task<bool> UpdateFormQuestions(UpdateDTOs.UpdateFormQuestionsDTO updateFormQuestionDTO);
-    public Task<IEnumerable<GetDTOs.GetFormQuestionDTO>> GetFormQuestionsBySubcategory(Guid subcategoryId);
+    public Task<GetFormQuestionDTO> AddFormQuestion(PostFormQuestionDTO postFormQuestionDTO);
+    public Task<bool> UpdateFormQuestions(UpdateFormQuestionsDTO updateFormQuestionDTO);
+    public Task<IEnumerable<GetFormQuestionDTO>> GetFormQuestionsBySubcategory(Guid subcategoryId);
 }

@@ -1,16 +1,13 @@
 namespace Bidro.DTOs.LocationComponentsDTOs;
 
-public class PostDTOs
+public record PostCityDTO(
+    Guid CountyId,
+    string Name)
 {
-    public record PostCityDTO(
-        Guid CountyId,
-        string Name)
-    {
-    }
+}
 
-    public record PostCountyDTO(
-        string Name,
-        string Code)
-    {
-    }
+public record PostCountyDTO(
+    string Name,
+    string Code)
+{
 }

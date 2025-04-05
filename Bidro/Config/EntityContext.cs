@@ -1,10 +1,13 @@
 using Bidro.EntityObjects;
-using Bidro.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bidro.Config;
 
+#pragma warning disable IL2026
+#pragma warning disable IL3050
 public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbContext(options)
+#pragma warning restore IL3050
+#pragma warning restore IL2026
 {
     public DbSet<Category> Categories { get; set; }
     public DbSet<Subcategory> Subcategories { get; set; }
@@ -19,15 +22,17 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
     public DbSet<FirmLocation> FirmLocations { get; set; }
     public DbSet<FirmContact> FirmContacts { get; set; }
     public DbSet<Review> Reviews { get; set; }
-    public DbSet<UserTypes.FirmAccount> FirmAccounts { get; set; }
-    public DbSet<UserTypes.UserAccount> UserAccounts { get; set; }
-    public DbSet<UserTypes.AdminAccount> AdminAccounts { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Ensure the uuid-ossp extension is created
+        modelBuilder.HasPostgresExtension("uuid-ossp");
+
         modelBuilder.Entity<Category>().HasKey(c => c.Id);
         modelBuilder.Entity<Category>().Property(c => c.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<Category>().Property(c => c.Name)
             .IsRequired();
@@ -36,6 +41,10 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Category>().HasMany(c => c.Subcategories).WithOne(s => s.ParentCategory);
 
         modelBuilder.Entity<Subcategory>().HasKey(s => s.Id);
+        modelBuilder.Entity<Subcategory>().Property(s => s.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
+            .IsRequired();
         modelBuilder.Entity<Subcategory>().Property(s => s.Name).IsRequired();
         modelBuilder.Entity<Subcategory>().HasIndex(s => s.Name).IsUnique();
         modelBuilder.Entity<Subcategory>().Property(s => s.Icon).IsRequired();
@@ -48,6 +57,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<County>()
             .Property(c => c.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<County>()
             .Property(c => c.Name)
@@ -68,6 +78,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<City>().HasKey(c => c.Id);
         modelBuilder.Entity<City>().Property(c => c.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<City>().Property(c => c.Name).IsRequired();
         modelBuilder.Entity<City>().HasOne(c => c.County).WithMany(c => c.Cities);
@@ -76,17 +87,23 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<ListingLocation>().HasKey(l => l.ListingId);
         modelBuilder.Entity<ListingLocation>().Property(l => l.ListingId)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.Listing).WithOne(l => l.Location);
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.County).WithMany(c => c.Locations);
         modelBuilder.Entity<ListingLocation>().HasOne(l => l.City).WithMany(c => c.Locations);
 
         modelBuilder.Entity<ListingContact>().HasKey(c => c.ListingId);
+        modelBuilder.Entity<ListingContact>().Property(c => c.ListingId)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
+            .IsRequired();
         modelBuilder.Entity<ListingContact>().HasOne(c => c.Listing).WithOne(l => l.Contact);
 
         modelBuilder.Entity<FormAnswer>().HasKey(f => f.Id);
         modelBuilder.Entity<FormAnswer>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<FormAnswer>()
             .HasOne(f => f.Listing)
@@ -98,6 +115,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Listing>().HasKey(l => l.Id);
         modelBuilder.Entity<Listing>().Property(l => l.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<Listing>().Property(l => l.Title).IsRequired();
         modelBuilder.Entity<Listing>().HasOne(l => l.User).WithMany(u => u.Listings);
@@ -109,6 +127,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<FormQuestion>().HasKey(q => q.Id);
         modelBuilder.Entity<FormQuestion>().Property(q => q.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<FormQuestion>().Property(q => q.Label).IsRequired();
         modelBuilder.Entity<FormQuestion>().HasMany(q => q.Answers)
@@ -119,6 +138,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Firm>().HasKey(f => f.Id);
         modelBuilder.Entity<Firm>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<Firm>().Property(f => f.Name).IsRequired();
         modelBuilder.Entity<Firm>().HasIndex(f => f.Name).IsUnique();
@@ -129,15 +149,27 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
             .HasForeignKey<Firm>(f => f.ContactId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Firm>().HasMany(f => f.Subcategories).WithMany(c => c.Firms)
-            .UsingEntity<Dictionary<string, object>>("FirmCategory",
+            .UsingEntity<Dictionary<string, object>>("FirmSubcategories",
                 r => r.HasOne<Subcategory>().WithMany().HasForeignKey("SubcategoryId"),
                 l => l.HasOne<Firm>().WithMany().HasForeignKey("FirmId"));
         modelBuilder.Entity<Firm>().HasMany(f => f.Reviews).WithOne(r => r.Firm);
-        modelBuilder.Entity<Firm>().HasMany(f => f.Users).WithOne(u => u.Firm);
+        modelBuilder.Entity<Firm>().Property(f => f.Rating).HasDefaultValue(0);
+        modelBuilder.Entity<Firm>().Property(f => f.ReviewCount).HasDefaultValue(0);
+        modelBuilder.Entity<Firm>().Property(f => f.IsVerified).HasDefaultValue(false);
+        modelBuilder.Entity<Firm>().Property(f => f.IsSuspended).HasDefaultValue(false);
+        modelBuilder.Entity<Firm>()
+            .HasMany(f => f.Users)
+            .WithMany(u => u.Firms)
+            .UsingEntity<Dictionary<string, object>>(
+                "FirmUsers",
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                j => j.HasOne<Firm>().WithMany().HasForeignKey("FirmId")
+            );
 
         modelBuilder.Entity<FirmLocation>().HasKey(f => f.Id);
         modelBuilder.Entity<FirmLocation>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<FirmLocation>().Property(f => f.Address).IsRequired();
         modelBuilder.Entity<FirmLocation>().Property(f => f.PostalCode).IsRequired();
@@ -148,6 +180,7 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<FirmContact>().HasKey(f => f.Id);
         modelBuilder.Entity<FirmContact>().Property(f => f.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<FirmContact>().Property(f => f.Email).IsRequired();
         modelBuilder.Entity<FirmContact>().HasIndex(f => f.Email).IsUnique();
@@ -160,35 +193,77 @@ public class EntityDbContext(DbContextOptions<EntityDbContext> options) : DbCont
         modelBuilder.Entity<Review>().HasKey(r => r.Id);
         modelBuilder.Entity<Review>().Property(r => r.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.ReviewText).IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.Rating).IsRequired();
         modelBuilder.Entity<Review>().Property(r => r.Date).IsRequired();
         modelBuilder.Entity<Review>().HasOne(r => r.Firm).WithMany(f => f.Reviews);
 
-        modelBuilder.Entity<UserTypes.UserAccount>().ToTable("Users");
-        modelBuilder.Entity<UserTypes.UserAccount>().HasKey(u => u.Id);
-        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.Id)
+        modelBuilder.Entity<User>()
+            .HasKey(u => u.Id);
+        modelBuilder.Entity<User>()
+            .Property(u => u.Id)
             .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("uuid_generate_v4()")
             .IsRequired();
-        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.UserName).IsRequired();
-        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.FirstName).IsRequired();
-        modelBuilder.Entity<UserTypes.UserAccount>().Property(u => u.LastName).IsRequired();
-
-        modelBuilder.Entity<UserTypes.FirmAccount>().ToTable("FirmAccounts")
-            .HasKey(u => u.UserAccountId);
-        modelBuilder.Entity<UserTypes.FirmAccount>().HasOne(u => u.Firm).WithMany(f => f.Users)
-            .HasForeignKey(u => u.FirmId);
-        modelBuilder.Entity<UserTypes.FirmAccount>().HasOne(u => u.UserAccount)
-            .WithOne()
-            .HasForeignKey<UserTypes.FirmAccount>(u => u.UserAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<UserTypes.AdminAccount>().ToTable("AdminAccounts");
-        modelBuilder.Entity<UserTypes.AdminAccount>()
-            .HasOne(u => u.UserAccount)
-            .WithOne()
-            .HasForeignKey<UserTypes.AdminAccount>(u => u.UserAccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<User>()
+            .Property(u => u.Email)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .Property(u => u.PasswordHash)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.FirstName)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.LastName)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.SecurityStamp)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.EmailConfirmed)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.PhoneNumber)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.PhoneNumberConfirmed)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.TwoFactorEnabled)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.LockoutEnabled)
+            .IsRequired();
+        modelBuilder.Entity<User>()
+            .Property(u => u.AccessFailedCount)
+            .IsRequired();
+        // now the default values
+        modelBuilder.Entity<User>()
+            .Property(u => u.EmailConfirmed)
+            .HasDefaultValue(false);
+        modelBuilder.Entity<User>()
+            .Property(u => u.PhoneNumberConfirmed)
+            .HasDefaultValue(false);
+        modelBuilder.Entity<User>()
+            .Property(u => u.TwoFactorEnabled)
+            .HasDefaultValue(false);
+        modelBuilder.Entity<User>()
+            .Property(u => u.LockoutEnabled)
+            .HasDefaultValue(false);
+        modelBuilder.Entity<User>()
+            .Property(u => u.LockoutEnd)
+            .HasDefaultValue(null);
+        modelBuilder.Entity<User>()
+            .Property(u => u.AccessFailedCount)
+            .HasDefaultValue(0);
     }
 }

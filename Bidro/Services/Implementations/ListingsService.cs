@@ -1,14 +1,15 @@
-using System.Data;
+using Bidro.Config;
 using Bidro.DTOs.ListingDTOs;
 using Bidro.EntityObjects;
 using Dapper;
 
 namespace Bidro.Services.Implementations;
 
-public class ListingsService(IDbConnection db) : IListingsService
+public class ListingsService(PgConnectionPool pgConnectionPool) : IListingsService
 {
-    public async Task<Guid> AddListing(PostDTOs.PostListingDTO listing)
+    public async Task<Guid> AddListing(PostListingDTO listing)
     {
+        using var db = await pgConnectionPool.RentAsync();
         using var transaction = db.BeginTransaction();
         try
         {
@@ -22,7 +23,7 @@ public class ListingsService(IDbConnection db) : IListingsService
             location.ListingId = listingId;
 
             const string addLocationQuery =
-                "INSERT INTO \"Locations\" (\"CountyId\", \"CityId\", \"Address\", \"PostalCode\", \"ListingId\") " +
+                "INSERT INTO \"ListingLocations\" (\"CountyId\", \"CityId\", \"Address\", \"PostalCode\", \"ListingId\") " +
                 "VALUES (@CountyId, @CityId, @Address, @PostalCode, @ListingId)";
             await db.ExecuteAsync(addLocationQuery, location, transaction);
 
@@ -30,7 +31,7 @@ public class ListingsService(IDbConnection db) : IListingsService
             contact.ListingId = listingId;
 
             const string addContactQuery =
-                "INSERT INTO \"Contacts\" (\"Name\", \"Email\", \"Phone\", \"ListingId\") " +
+                "INSERT INTO \"ListingContacts\" (\"Name\", \"Email\", \"Phone\", \"ListingId\") " +
                 "VALUES (@Name, @Email, @Phone, @ListingId)";
             await db.ExecuteAsync(addContactQuery, contact, transaction);
 
@@ -53,20 +54,25 @@ public class ListingsService(IDbConnection db) : IListingsService
         }
     }
 
-    public async Task<GetDTOs.GetListingDTO> GetListingById(Guid listingId)
+    public async Task<GetListingDTO> GetListingById(Guid listingId)
     {
-        var sqlListing = @"
-            SELECT l.*, loc.*, c.* 
-            FROM ""Listings"" l
-            JOIN ""Locations"" loc ON l.""Id"" = loc.""ListingId""
-            JOIN ""Contacts"" c ON l.""Id"" = c.""ListingId""
-            WHERE l.""Id"" = @ListingId";
+        using var db = await pgConnectionPool.RentAsync();
+        const string sqlListing = """
+                                  
+                                              SELECT l.*, loc.*, c.* 
+                                              FROM "Listings" l
+                                              JOIN "ListingLocations" loc ON l."Id" = loc."ListingId"
+                                              JOIN "ListingContacts" c ON l."Id" = c."ListingId"
+                                              WHERE l."Id" = @ListingId
+                                  """;
 
-        var sqlFormAnswers = @"
-            SELECT fa.*, fq.*
-            FROM ""FormAnswers"" fa
-            JOIN ""FormQuestions"" fq ON fa.""FormQuestionId"" = fq.""Id""
-            WHERE fa.""ListingId"" = @ListingId";
+        const string sqlFormAnswers = """
+                                      
+                                                  SELECT fa.*, fq.*
+                                                  FROM "FormAnswers" fa
+                                                  JOIN "FormQuestions" fq ON fa."FormQuestionId" = fq."Id"
+                                                  WHERE fa."ListingId" = @ListingId
+                                      """;
 
         var listing = await db.QueryAsync<Listing, ListingLocation, ListingContact, Listing>(
             sqlListing,
@@ -94,7 +100,7 @@ public class ListingsService(IDbConnection db) : IListingsService
         var listingResult = listing.FirstOrDefault();
         if (listingResult == null) throw new KeyNotFoundException($"Listing with ID {listingId} not found.");
         listingResult.FormAnswers = formAnswers.ToList();
-        return GetDTOs.GetListingDTO.FromListing(listingResult);
+        return GetListingDTO.FromListing(listingResult);
     }
 
 
@@ -102,10 +108,11 @@ public class ListingsService(IDbConnection db) : IListingsService
     {
         // Should be deleted in reverse order of creation
         const string sqlDeleteFormAnswers = "DELETE FROM \"FormAnswers\" WHERE \"ListingId\" = @ListingId";
-        const string sqlDeleteLocation = "DELETE FROM \"Locations\" WHERE \"ListingId\" = @ListingId";
-        const string sqlDeleteContact = "DELETE FROM \"Contacts\" WHERE \"ListingId\" = @ListingId";
+        const string sqlDeleteLocation = "DELETE FROM \"ListingLocations\" WHERE \"ListingId\" = @ListingId";
+        const string sqlDeleteContact = "DELETE FROM \"ListingContacts\" WHERE \"ListingId\" = @ListingId";
         const string sqlDeleteListing = "DELETE FROM \"Listings\" WHERE \"Id\" = @ListingId";
 
+        using var db = await pgConnectionPool.RentAsync();
         using var transaction = db.BeginTransaction();
         try
         {
@@ -119,8 +126,7 @@ public class ListingsService(IDbConnection db) : IListingsService
         catch
         {
             transaction.Rollback();
-            throw;
-            throw new ArgumentNullException(nameof(sqlDeleteContact));
+            throw new ArgumentNullException($"Listing with ID {listingId} not found.");
         }
     }
 }

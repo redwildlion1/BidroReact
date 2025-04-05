@@ -1,149 +1,116 @@
-using Bidro.Config;
+// CategoriesControllerTests.cs
+
 using Bidro.Controllers;
 using Bidro.DTOs.CategoryDTOs;
 using Bidro.Services.Implementations;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using BidroUnitTests.TestsFixtures;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BidroUnitTests.ControllersTests;
 
-public abstract class CategoriesControllerTests
+// ReSharper disable once ClassNeverInstantiated.Global
+public class CategoriesControllerTestFixture()
+    : TestFixture<CategoriesController, CategoriesService>(new CategoriesServiceFactory(),
+        new CategoriesControllerFactory());
+
+public class CategoriesControllerTests(CategoriesControllerTestFixture fixture)
+    : IClassFixture<CategoriesControllerTestFixture>
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class CategoriesControllerFixture : IDisposable
+    private readonly CategoriesController _controller = fixture.Controller;
+
+    [Fact]
+    public async Task AddCategory_ReturnsOkResult()
     {
-        private readonly EntityDbContext _dbContext;
+        // Arrange
+        var categoryDTO = new PostCategoryDTO(
+            "Test Category",
+            "Test Icon",
+            "COX"
+        );
 
-        public CategoriesControllerFixture()
-        {
-            var options = new DbContextOptionsBuilder<EntityDbContext>()
-                .UseInMemoryDatabase("TestDatabase")
-                .Options;
+        // Act
+        var result = await _controller.AddCategory(categoryDTO);
 
-            _dbContext = new EntityDbContext(options);
-            var categoriesService = new CategoriesService(_dbContext);
-            CategoriesController = new CategoriesController(categoriesService);
-        }
-
-        public CategoriesController CategoriesController { get; }
-
-        public void Dispose()
-        {
-            _dbContext.Database.EnsureDeleted();
-        }
+        // Assert
+        Assert.IsType<Ok<GetCategoryDTO>>(result);
     }
 
-    public class AddCategoryTests(CategoriesControllerFixture fixture)
-        : IClassFixture<CategoriesControllerFixture>
+    [Fact]
+    public async Task AddSubcategory_ReturnsOkResult()
     {
-        private readonly CategoriesController _categoriesController = fixture.CategoriesController;
+        // Arrange
+        var categoryDTO = new PostCategoryDTO(
+            "Test Category1",
+            "Test Icon1",
+            "BOX"
+        );
 
-        [Fact]
-        public async Task AddCategory_ReturnsOkResult()
-        {
-            // Arrange
-            var categoryDTO = new PostDTOs.PostCategoryDTO(
-                "Test Category",
-                "Test Icon",
-                "Test Identifier"
-            );
+        // First, add a category to ensure the subcategory can be added
+        var addCategoryResult = await _controller.AddCategory(categoryDTO);
+        Assert.IsType<Ok<GetCategoryDTO>>(addCategoryResult);
 
-            // Act
-            var result = await _categoriesController.AddCategory(categoryDTO);
+        var categoryId = ((Ok<GetCategoryDTO>)addCategoryResult).Value!.Id;
+        var subcategoryDTO = new PostSubcategoryDTO(
+            "Test Subcategory",
+            "Test Icon",
+            categoryId,
+            "top69"
+        );
 
-            // Assert
-            Assert.IsType<OkResult>(result);
-        }
+        // Act
+        var result = await _controller.AddSubcategory(subcategoryDTO);
+
+        // Assert
+        Assert.IsType<Ok<GetSubcategoryDTO>>(result);
     }
 
-    public class AddSubcategoryTests(CategoriesControllerFixture fixture)
-        : IClassFixture<CategoriesControllerFixture>
+    [Fact]
+    public async Task GetAllCategories_ReturnsNotFoundResult()
     {
-        private readonly CategoriesController _categoriesController = fixture.CategoriesController;
+        // Act
+        var result = await _controller.GetAllCategories();
 
-        [Fact]
-        public async Task AddSubcategory_ReturnsOkResult()
-        {
-            // Arrange
-            var subcategoryDTO = new PostDTOs.PostSubcategoryDTO(
-                "Test Subcategory",
-                "Test Icon",
-                Guid.NewGuid(),
-                "Test Identifier"
-            );
-
-            // Act
-            var result = await _categoriesController.AddSubcategory(subcategoryDTO);
-
-            // Assert
-            Assert.IsType<OkResult>(result);
-        }
+        // Assert
+        Assert.IsType<Ok<List<GetCategoryDTO>>>(result);
     }
 
-    public class GetAllCategoriesTests(CategoriesControllerFixture fixture)
-        : IClassFixture<CategoriesControllerFixture>
+    [Fact]
+    public async Task UpdateCategory_ReturnsValidationFailure_BadGuid()
     {
-        private readonly CategoriesController _categoriesController = fixture.CategoriesController;
+        // Arrange
+        var categoryId = Guid.NewGuid();
+        var updateDTO = new UpdateCategoryDTO(
+            categoryId,
+            "Updated Category",
+            "Updated Icon",
+            "BOX"
+        );
 
-        [Fact]
-        public async Task GetAllCategories_ReturnsNotFoundResult()
-        {
-            // Act
-            var result = await _categoriesController.GetAllCategories();
+        // Act
+        var result = await _controller.UpdateCategory(updateDTO);
 
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
+        // Assert
+        Assert.IsType<BadRequest<List<ValidationFailure>>>(result);
     }
 
-    public class UpdateCategoryTests(CategoriesControllerFixture fixture)
-        : IClassFixture<CategoriesControllerFixture>
+    [Fact]
+    public async Task UpdateSubcategory_ReturnsValidationError_BadGuid()
     {
-        private readonly CategoriesController _categoriesController = fixture.CategoriesController;
+        // Arrange
+        var subcategoryId = Guid.NewGuid();
+        var updateDTO = new UpdateSubcategoryDTO(
+            subcategoryId,
+            "Updated Subcategory",
+            "Updated Icon",
+            Guid.NewGuid(),
+            "top"
+        );
 
-        [Fact]
-        public async Task UpdateCategory_ReturnsNotFoundResult()
-        {
-            // Arrange
-            var categoryId = Guid.NewGuid();
-            var updateDTO = new UpdateDTOs.UpdateCategoryDTO(
-                categoryId,
-                "Updated Category",
-                "Updated Icon",
-                "Updated Identifier"
-            );
+        // Act
+        var result = await _controller.UpdateSubcategory(updateDTO);
 
-            // Act
-            var result = await _categoriesController.UpdateCategory(updateDTO);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
-    }
-
-    public class UpdateSubcategoryTests(CategoriesControllerFixture fixture)
-        : IClassFixture<CategoriesControllerFixture>
-    {
-        private readonly CategoriesController _categoriesController = fixture.CategoriesController;
-
-        [Fact]
-        public async Task UpdateSubcategory_ReturnsNotFoundResult()
-        {
-            // Arrange
-            var subcategoryId = Guid.NewGuid();
-            var updateDTO = new UpdateDTOs.UpdateSubcategoryDTO(
-                subcategoryId,
-                "Updated Subcategory",
-                "Updated Icon",
-                Guid.NewGuid(),
-                "Updated Identifier"
-            );
-
-            // Act
-            var result = await _categoriesController.UpdateSubcategory(updateDTO);
-
-            // Assert
-            Assert.IsType<NotFoundResult>(result);
-        }
+        // Assert
+        Assert.IsType<BadRequest<List<ValidationFailure>>>(result);
     }
 }

@@ -1,13 +1,15 @@
-using Bidro.EntityObjects;
-
 namespace Bidro.DTOs.LocationComponentsDTOs;
 
-public record CityDTO(
-    Guid CountyId,
-    string Name)
+public record CityDTO
 {
-    public City ToCity()
+    public CityDTO(Guid CountyId,
+        string Name)
     {
-        return new City(CountyId, Name);
+        this.CountyId = CountyId;
+        this.Name = Name;
     }
+
+
+    public Guid CountyId { get; init; }
+    public string Name { get; init; }
 }

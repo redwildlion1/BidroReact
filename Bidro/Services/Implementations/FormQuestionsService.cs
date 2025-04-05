@@ -1,17 +1,19 @@
-using System.Data;
+using Bidro.Config;
 using Bidro.DTOs.FormQuestionsDTOs;
 using Dapper;
 
 namespace Bidro.Services.Implementations;
 
-public class FormQuestionsService(IDbConnection db) : IFormQuestionsService
+public class FormQuestionsService(PgConnectionPool pgConnectionPool) : IFormQuestionsService
 {
-    public async Task<GetDTOs.GetFormQuestionDTO> AddFormQuestion(PostDTOs.PostFormQuestionDTO formQuestion)
+    public async Task<GetFormQuestionDTO> AddFormQuestion(PostFormQuestionDTO formQuestion)
     {
-        var sql =
+        const string sql =
             "INSERT INTO \"FormQuestions\" (\"Label\", \"InputType\", \"OrderInForm\", \"IsRequired\", \"SubcategoryId\", \"DefaultAnswer\") VALUES (@Label, @InputType, @OrderInForm, @IsRequired, @SubcategoryId, @DefaultAnswer) RETURNING \"Id\"";
+
+        using var db = await pgConnectionPool.RentAsync();
         var id = await db.ExecuteScalarAsync<Guid>(sql, formQuestion);
-        return new GetDTOs.GetFormQuestionDTO(
+        return new GetFormQuestionDTO(
             id,
             formQuestion.Label,
             formQuestion.InputType,
@@ -22,8 +24,9 @@ public class FormQuestionsService(IDbConnection db) : IFormQuestionsService
         );
     }
 
-    public async Task<bool> UpdateFormQuestions(UpdateDTOs.UpdateFormQuestionsDTO formQuestions)
+    public async Task<bool> UpdateFormQuestions(UpdateFormQuestionsDTO formQuestions)
     {
+        using var db = await pgConnectionPool.RentAsync();
         using var transaction = db.BeginTransaction();
         try
         {
@@ -45,11 +48,13 @@ public class FormQuestionsService(IDbConnection db) : IFormQuestionsService
     }
 
 
-    public async Task<IEnumerable<GetDTOs.GetFormQuestionDTO>> GetFormQuestionsBySubcategory(Guid subcategoryId)
+    public async Task<IEnumerable<GetFormQuestionDTO>> GetFormQuestionsBySubcategory(Guid subcategoryId)
     {
         const string sql =
             "SELECT * FROM \"FormQuestions\" WHERE \"SubcategoryId\" = @SubcategoryId ORDER BY \"OrderInForm\"";
-        var formQuestions = await db.QueryAsync<GetDTOs.GetFormQuestionDTO>(sql, new { SubcategoryId = subcategoryId });
+
+        using var db = await pgConnectionPool.RentAsync();
+        var formQuestions = await db.QueryAsync<GetFormQuestionDTO>(sql, new { SubcategoryId = subcategoryId });
         return formQuestions.ToList();
     }
 }

@@ -4,14 +4,14 @@ namespace Bidro.Validation.ValidationObjects;
 
 public class FormQuestionValidityObject
 {
-    public FormQuestionValidityObject(PostDTOs.PostFormQuestionDTO formQuestionDTO)
+    public FormQuestionValidityObject(PostFormQuestionDTO formQuestionDTO)
     {
         Label = formQuestionDTO.Label;
         DefaultAnswer = formQuestionDTO.DefaultAnswer;
         SubcategoryId = formQuestionDTO.SubcategoryId;
     }
 
-    public FormQuestionValidityObject(UpdateDTOs.UpdateFormQuestionDTO formQuestionDTO)
+    public FormQuestionValidityObject(UpdateFormQuestionDTO formQuestionDTO)
     {
         Label = formQuestionDTO.Label;
         DefaultAnswer = formQuestionDTO.DefaultAnswer;

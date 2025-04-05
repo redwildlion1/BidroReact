@@ -2,32 +2,65 @@ using Bidro.DTOs.FirmDTOs;
 
 namespace Bidro.Validation.ValidationObjects;
 
-public class FirmValidityObject(PostDTOs.PostFirmDTO firmDTO)
+public class FirmValidityObject(PostFirmDTO firmDTO)
 {
-    public FirmBaseValidityObject FirmBase = new(firmDTO.Base);
-    public FirmContactValidityObject FirmContact = new(firmDTO.Contact);
-    public FirmLocationValidityObject FirmLocation = new(firmDTO.Location);
+    public readonly FirmBaseValidityObject FirmBase = new(firmDTO.Base);
+    public readonly FirmContactValidityObject FirmContact = new(firmDTO.Contact);
+    public readonly FirmLocationValidityObject FirmLocation = new(firmDTO.Location);
 }
 
-public class FirmBaseValidityObject(PostDTOs.PostFirmBaseDTO firmDTO)
+public class FirmBaseValidityObject(PostFirmBaseDTO firmDTO)
 {
-    public List<Guid> CategoryIds { get; } = firmDTO.SubcategoryIds;
+    public List<Guid> SubcategoryIds { get; } = firmDTO.SubcategoryIds;
     public string Name { get; } = firmDTO.Name;
     public string Description { get; } = firmDTO.Description;
     public string Logo { get; } = firmDTO.Logo;
+
+    public string Website { get; } = firmDTO.Website;
 }
 
-public class FirmLocationValidityObject(PostDTOs.PostFirmLocationDTO firmLocationDTO)
+public class FirmLocationValidityObject
 {
-    public Guid CityId { get; } = firmLocationDTO.CityId;
-    public Guid CountyId { get; } = firmLocationDTO.CountyId;
+    public FirmLocationValidityObject(PostFirmLocationDTO firmLocationDTO)
+    {
+        CityId = firmLocationDTO.CityId;
+        CountyId = firmLocationDTO.CountyId;
+        Address = firmLocationDTO.Address;
+        PostalCode = firmLocationDTO.PostalCode!;
+    }
 
-    public string Address { get; } = firmLocationDTO.Address;
-    public string PostalCode { get; } = firmLocationDTO.PostalCode!;
+    public FirmLocationValidityObject(UpdateFirmLocationDTO firmLocationDTO)
+    {
+        CityId = firmLocationDTO.CityId;
+        CountyId = firmLocationDTO.CountyId;
+        Address = firmLocationDTO.Address;
+        PostalCode = firmLocationDTO.PostalCode!;
+    }
+
+    public Guid CityId { get; }
+    public Guid CountyId { get; }
+
+    public string Address { get; }
+    public string PostalCode { get; }
 }
 
-public class FirmContactValidityObject(PostDTOs.PostFirmContactDTO firmContactDTO)
+public class FirmContactValidityObject
 {
-    public string Email { get; } = firmContactDTO.Email;
-    public string Phone { get; } = firmContactDTO.Phone;
+    public FirmContactValidityObject(PostFirmContactDTO firmContactDTO)
+    {
+        Email = firmContactDTO.Email;
+        Phone = firmContactDTO.Phone;
+        Fax = firmContactDTO.Fax;
+    }
+
+    public FirmContactValidityObject(UpdateFirmContactDTO firmContactDTO)
+    {
+        Email = firmContactDTO.Email;
+        Phone = firmContactDTO.Phone;
+        Fax = firmContactDTO.Fax;
+    }
+
+    public string Email { get; }
+    public string Phone { get; }
+    public string Fax { get; }
 }

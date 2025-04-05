@@ -1,17 +1,12 @@
+using Bidro.DTOs.ReviewDTOs;
+
 namespace Bidro.Validation.ValidationObjects;
 
-public class ReviewValidityObject
+public class ReviewValidityObject(PostReviewDTO reviewDTO)
 {
-    //TO DO: Add constructor
-    //Need to add DTOs
-    public string Content { get; }
-    public int Rating { get; }
-}
+    public string Content { get; } = reviewDTO.ReviewText;
+    public int Rating { get; } = reviewDTO.Rating;
 
-public class ReviewValidityObjectDb
-{
-    //public ReviewValidityObjectDb()
-
-    public Guid UserId { get; set; }
-    public Guid FirmId { get; set; }
+    public Guid UserId { get; set; } = reviewDTO.UserId;
+    public Guid FirmId { get; set; } = reviewDTO.FirmId;
 }

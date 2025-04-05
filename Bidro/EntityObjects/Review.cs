@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Bidro.Types;
 
 namespace Bidro.EntityObjects;
 
@@ -12,7 +11,7 @@ public class Review(string reviewText, int rating, DateTime date, Guid firmId, G
 
     [Required] public Guid UserId { get; set; } = userId;
 
-    public UserTypes.UserAccount? User { get; init; }
+    public User? User { get; init; }
 
     [StringLength(100)] public string ReviewText { get; init; } = reviewText;
 
